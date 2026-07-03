@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Child {
+  id                  String      @id @default(cuid())
+  name                String
+  age                 Float       // age in months
+  sex                 String      // "M" or "F"
+  weight              Float       // kg
+  height              Float       // cm
+  muac                Float       // mid-upper arm circumference in cm
+  headCircumference   Float?      // optional, in cm
+  chestCircumference  Float?      // optional, in cm
+  
+  // Analysis results
+  bmi                 Float?
+  nutritionStatus     String?     // SAM, MAM, Underweight, Normal, Overweight, Obesity
+  riskLevel           String?     // Low, Medium, High
+  classification      String?     // detailed classification
+  recommendation      String?     // medical recommendation
+  referralSuggestion  String?     // hospital or nutrition program
+  
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  
+  @@index([nutritionStatus])
+  @@index([riskLevel])
+  @@index([createdAt])
+}
+
+model AnalysisLog {
+  id        String      @id @default(cuid())
+  childId   String
+  analysis  String      // JSON stringified analysis result
+  createdAt DateTime    @default(now())
+}
