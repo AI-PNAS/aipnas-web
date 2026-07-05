@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI-PNAS Medical AI Dashboard</title>
+
+<style>
+/* ===== GLOBAL STYLE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== HEADER ===== */
+header {
+  padding: 20px;
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+header h1 {
+  font-size: 28px;
+  background: linear-gradient(90deg, #00d4ff, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  background: rgba(255,255,255,0.03);
+  padding: 20px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #93c5fd;
+}
+
+.nav-item {
+  padding: 12px;
+  margin: 10px 0;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nav-item:hover {
+  background: #2563eb;
+}
+
+/* ===== MAIN ===== */
+.main {
+  padding: 25px;
+}
+
+/* ===== CARDS ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  padding: 20px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.08);
+}
+
+.card h3 {
+  color: #93c5fd;
+}
+
+.card p {
+  font-size: 22px;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* ===== FORM ===== */
+.form {
+  margin-top: 30px;
+  background: rgba(255,255,255,0.05);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* ===== RESULT BOX ===== */
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(0,0,0,0.3);
+  border-left: 4px solid #22c55e;
+  border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🧠 AI-PNAS Medical Intelligence Dashboard</h1>
+</header>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Navigation</h2>
+    <div class="nav-item">🏠 Dashboard</div>
+    <div class="nav-item">➕ Register Child</div>
+    <div class="nav-item">📊 Analytics</div>
+    <div class="nav-item">⚠️ Risk Reports</div>
+    <div class="nav-item">⚙️ Settings</div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- CARDS -->
+    <div class="cards">
+      <div class="card">
+        <h3>Total Children</h3>
+        <p>128</p>
+      </div>
+
+      <div class="card">
+        <h3>High Risk</h3>
+        <p>12</p>
+      </div>
+
+      <div class="card">
+        <h3>Normal</h3>
+        <p>96</p>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="form">
+      <h2>Register Child (AI Analysis)</h2>
+
+      <input id="name" placeholder="Child Name"/>
+      <input id="age" placeholder="Age (months)"/>
+      <input id="weight" placeholder="Weight (kg)"/>
+      <input id="height" placeholder="Height (cm)"/>
+      <input id="muac" placeholder="MUAC (cm)"/>
+
+      <button onclick="analyze()">Run AI Analysis</button>
+
+      <div id="result" class="result" style="display:none;"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function analyze() {
+  let name = document.getElementById("name").value;
+  let age = document.getElementById("age").value;
+  let weight = document.getElementById("weight").value;
+  let height = document.getElementById("height").value;
+  let muac = document.getElementById("muac").value;
+
+  let status = "";
+
+  if (muac < 11.5) status = "🔴 Severe Acute Malnutrition (SAM)";
+  else if (muac < 12.5) status = "🟠 Moderate Acute Malnutrition (MAM)";
+  else status = "🟢 Normal Nutrition";
+
+  let resultBox = document.getElementById("result");
+  resultBox.style.display = "block";
+  resultBox.innerHTML = `
+    <h3>AI Result for ${name}</h3>
+    <p>Age: ${age} months</p>
+    <p>Weight: ${weight} kg</p>
+    <p>Height: ${height} cm</p>
+    <p>MUAC: ${muac} cm</p>
+    <hr/>
+    <h2>${status}</h2>
+  `;
+}
+</script>
+
+</body>
+</html>
