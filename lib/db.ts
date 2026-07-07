@@ -1,8 +1,10 @@
 // Database utilities and Prisma client
 
 import { PrismaClient } from '@prisma/client';
-import { ChildData, NutritionAnalysisResult } from './types';
+import { ChildData } from './types';
 import { analyzeChildNutrition } from './nutrition/analyzer';
+
+process.env.DATABASE_URL = process.env.DATABASE_URL || 'file:./prisma/dev.db';
 
 // Singleton pattern for Prisma Client
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
@@ -20,17 +22,11 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
  */
 export async function registerChild(childData: ChildData) {
   try {
+    const data = { ...childData };
+    delete data.id;
+
     const child = await prisma.child.create({
-      data: {
-        name: childData.name,
-        age: childData.age,
-        sex: childData.sex,
-        weight: childData.weight,
-        height: childData.height,
-        muac: childData.muac,
-        headCircumference: childData.headCircumference,
-        chestCircumference: childData.chestCircumference,
-      },
+      data,
     });
     return child;
   } catch (error) {
@@ -50,22 +46,15 @@ export async function analyzeAndSaveNutrition(childId: string) {
 
     if (!child) throw new Error('Child not found');
 
-    const childData: ChildData = {
-      id: child.id,
-      name: child.name,
-      age: child.age,
+    const childData = {
+      ...child,
       sex: child.sex as 'M' | 'F',
-      weight: child.weight,
-      height: child.height,
-      muac: child.muac,
-      headCircumference: child.headCircumference || undefined,
-      chestCircumference: child.chestCircumference || undefined,
-    };
+    } as unknown as ChildData;
 
     const analysis = analyzeChildNutrition(childData);
 
     // Update child record with analysis results
-    const updatedChild = await prisma.child.update({
+    await prisma.child.update({
       where: { id: childId },
       data: {
         bmi: analysis.bmi,
@@ -74,6 +63,14 @@ export async function analyzeAndSaveNutrition(childId: string) {
         classification: analysis.classification,
         recommendation: analysis.recommendation,
         referralSuggestion: analysis.referralSuggestion,
+        reportSummary: analysis.reportSummary,
+        physicalSignAlerts: analysis.physicalSignAlerts.join(' | '),
+        vitalSignAlerts: analysis.vitalSignAlerts.join(' | '),
+        weightForAgeZ: analysis.zScores.weightForAge.value,
+        heightForAgeZ: analysis.zScores.heightForAge.value,
+        weightForHeightZ: analysis.zScores.weightForHeight.value,
+        bmiForAgeZ: analysis.zScores.bmiForAge.value,
+        muacZ: analysis.zScores.muac.value,
       },
     });
 
@@ -140,19 +137,9 @@ export async function getChildById(id: string) {
  */
 export async function updateChild(id: string, data: Partial<ChildData>) {
   try {
-    const updateData: any = {};
-    if (data.name !== undefined) updateData.name = data.name;
-    if (data.age !== undefined) updateData.age = data.age;
-    if (data.sex !== undefined) updateData.sex = data.sex;
-    if (data.weight !== undefined) updateData.weight = data.weight;
-    if (data.height !== undefined) updateData.height = data.height;
-    if (data.muac !== undefined) updateData.muac = data.muac;
-    if (data.headCircumference !== undefined) updateData.headCircumference = data.headCircumference;
-    if (data.chestCircumference !== undefined) updateData.chestCircumference = data.chestCircumference;
-
     return await prisma.child.update({
       where: { id },
-      data: updateData,
+      data,
     });
   } catch (error) {
     console.error('Error updating child:', error);

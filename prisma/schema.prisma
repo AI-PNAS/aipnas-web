@@ -15,11 +15,63 @@ model Child {
   name                String
   age                 Float       // age in months
   sex                 String      // "M" or "F"
+  religion            String?
+  continent           String?
+  country             String?
+  region              String?
+  zone                String?
+  woreda              String?
+  kebele              String?
+  pmh                 String?
+  fatherAge           Float?
+  fatherHealthStatus   String?
+  fatherCauseOfDeath   String?
+  motherAge           Float?
+  motherHealthStatus   String?
+  motherCauseOfDeath   String?
+  siblingsHistory     String?
+  familialDiseases    String?
+  earlyDevelopment    String?
+  educationalBackground String?
+  socialActivities    String?
+  workRecordIncome    String?
+  dietHabits          String?
+  alcoholUse          String?
+  tobaccoUse          String?
+  drugUse             String?
+  herbUse             String?
+  addictions          String?
+  bpSystolic          Float?
+  bpDiastolic         Float?
+  bpArterySite        String?
+  bpPosition          String?
+  bpGrade             String?
+  pulseRate           Float?
+  pulseSite           String?
+  pulseRhythm         String?
+  pulseVolume         String?
+  rrRate              Float?
+  rrPattern           String?
+  temperature         Float?
+  temperatureSite     String?
+  temperatureTime     String?
+  spo2                Float?
+  oxygenSupport       String?
   weight              Float       // kg
   height              Float       // cm
   muac                Float       // mid-upper arm circumference in cm
+  heightSource        String?
+  weightSource        String?
   headCircumference   Float?      // optional, in cm
   chestCircumference  Float?      // optional, in cm
+  edema               Boolean?
+  edemaDetails        String?
+  skinChanges         String?
+  hairChanges         String?
+  eyeSigns            String?
+  oralSigns           String?
+  hearingLossDevelopmentalDelay String?
+  generalAppearance   String?
   
   // Analysis results
   bmi                 Float?
@@ -28,6 +80,14 @@ model Child {
   classification      String?     // detailed classification
   recommendation      String?     // medical recommendation
   referralSuggestion  String?     // hospital or nutrition program
+  reportSummary       String?
+  physicalSignAlerts  String?
+  vitalSignAlerts     String?
+  weightForAgeZ       Float?
+  heightForAgeZ       Float?
+  weightForHeightZ    Float?
+  bmiForAgeZ          Float?
+  muacZ               Float?
   
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface HeaderProps {
   currentPage: string;
@@ -43,7 +44,7 @@ export default function Header({ currentPage }: HeaderProps) {
         </div>
 
         <nav className="mt-4 flex gap-6 border-t border-blue-500 pt-4">
-          <a
+          <Link
             href="/"
             className={`pb-2 border-b-2 ${
               currentPage === 'dashboard'
@@ -52,8 +53,8 @@ export default function Header({ currentPage }: HeaderProps) {
             }`}
           >
             Dashboard
-          </a>
-          <a
+          </Link>
+          <Link
             href="/register"
             className={`pb-2 border-b-2 ${
               currentPage === 'register'
@@ -62,7 +63,7 @@ export default function Header({ currentPage }: HeaderProps) {
             }`}
           >
             Register Child
-          </a>
+          </Link>
         </nav>
       </div>
     </header>

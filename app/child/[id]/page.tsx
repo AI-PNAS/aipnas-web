@@ -28,12 +28,36 @@ interface ChildData {
   classification: string | null;
   recommendation: string | null;
   referralSuggestion: string | null;
+  reportSummary: string | null;
+  physicalSignAlerts: string | null;
+  vitalSignAlerts: string | null;
+  weightForAgeZ: number | null;
+  heightForAgeZ: number | null;
+  weightForHeightZ: number | null;
+  bmiForAgeZ: number | null;
+  muacZ: number | null;
 }
 
 interface ChildDetailsPageProps {
   params: Promise<{
     id: string;
   }>;
+}
+
+function getTrafficLabel(value: number | null): 'Red' | 'Yellow' | 'Green' {
+  if (value === null) {
+    return 'Green';
+  }
+
+  if (value <= -3 || value >= 3) {
+    return 'Red';
+  }
+
+  if (value <= -2 || value >= 2) {
+    return 'Yellow';
+  }
+
+  return 'Green';
 }
 
 export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
@@ -111,11 +135,41 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
     height: child.height,
     muac: child.muac,
     bmi: child.bmi || 0,
-    nutritionStatus: (child.nutritionStatus || 'Unknown') as any,
-    riskLevel: (child.riskLevel || 'Unknown') as any,
+    nutritionStatus: (child.nutritionStatus || 'Normal') as NutritionAnalysisResult['nutritionStatus'],
+    riskLevel: (child.riskLevel || 'Low') as NutritionAnalysisResult['riskLevel'],
     classification: child.classification || '',
     recommendation: child.recommendation || '',
     referralSuggestion: child.referralSuggestion || '',
+    reportSummary: child.reportSummary || '',
+    physicalSignAlerts: child.physicalSignAlerts ? child.physicalSignAlerts.split(' | ') : [],
+    vitalSignAlerts: child.vitalSignAlerts ? child.vitalSignAlerts.split(' | ') : [],
+    zScores: {
+      weightForAge: {
+        value: child.weightForAgeZ || 0,
+        label: getTrafficLabel(child.weightForAgeZ),
+        interpretation: 'Persisted from the latest analysis',
+      },
+      heightForAge: {
+        value: child.heightForAgeZ || 0,
+        label: getTrafficLabel(child.heightForAgeZ),
+        interpretation: 'Persisted from the latest analysis',
+      },
+      weightForHeight: {
+        value: child.weightForHeightZ || 0,
+        label: getTrafficLabel(child.weightForHeightZ),
+        interpretation: 'Persisted from the latest analysis',
+      },
+      bmiForAge: {
+        value: child.bmiForAgeZ || 0,
+        label: getTrafficLabel(child.bmiForAgeZ),
+        interpretation: 'Persisted from the latest analysis',
+      },
+      muac: {
+        value: child.muacZ || 0,
+        label: getTrafficLabel(child.muacZ !== null ? -child.muacZ : null),
+        interpretation: 'Persisted from the latest analysis',
+      },
+    },
     timestamp: new Date(),
   };
 
@@ -156,7 +210,7 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
                       </div>
                     </div>
                   );
-                } catch (e) {
+                } catch {
                   return null;
                 }
               })}

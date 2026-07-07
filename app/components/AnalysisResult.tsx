@@ -13,7 +13,7 @@ function getRiskColor(riskLevel: string): string {
     case 'Medium':
       return 'bg-yellow-100 border-yellow-500 text-yellow-900';
     default:
-      return 'bg-green-100 border-green-500 text-green-900';
+      return 'bg-emerald-100 border-emerald-500 text-emerald-900';
   }
 }
 
@@ -30,101 +30,150 @@ function getStatusColor(status: string): string {
     case 'Obesity':
       return 'text-red-600 font-semibold';
     default:
-      return 'text-green-700';
+      return 'text-emerald-700';
+  }
+}
+
+function getTrafficColor(label: string): string {
+  switch (label) {
+    case 'Red':
+      return 'border-red-200 bg-red-50 text-red-800';
+    case 'Yellow':
+      return 'border-yellow-200 bg-yellow-50 text-yellow-800';
+    default:
+      return 'border-emerald-200 bg-emerald-50 text-emerald-800';
   }
 }
 
 export default function AnalysisResult({ result }: AnalysisResultProps) {
+  const alertCount = result.physicalSignAlerts.length + result.vitalSignAlerts.length;
+  const scoreCards: Array<{ label: string; score: { value: number; label: string; interpretation: string } }> = [
+    { label: 'Weight-for-Age', score: result.zScores.weightForAge },
+    { label: 'Height-for-Age', score: result.zScores.heightForAge },
+    { label: 'Weight-for-Height', score: result.zScores.weightForHeight },
+    { label: 'BMI-for-Age', score: result.zScores.bmiForAge },
+    { label: 'MUAC', score: result.zScores.muac },
+  ];
+
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6">
-        <h2 className="text-2xl font-bold">{result.name}</h2>
-        <p className="text-blue-100">Nutritional Assessment Report</p>
+    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-200/60">
+      <div className="bg-gradient-to-r from-slate-950 via-sky-950 to-cyan-900 p-6 text-white md:p-8">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-[0.35em] text-cyan-200">Integrated AI Classification</p>
+            <h2 className="mt-2 text-3xl font-semibold">{result.name}</h2>
+            <p className="mt-1 text-slate-200">Nutrition report generated at {new Date(result.timestamp).toLocaleString()}</p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur">
+            <p className="text-xs uppercase tracking-[0.3em] text-cyan-200">Risk Level</p>
+            <p className="text-2xl font-semibold">{result.riskLevel}</p>
+          </div>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6">
-        {/* Child Info */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 pb-6 border-b">
-          <div>
-            <p className="text-gray-600 font-semibold">Age</p>
-            <p className="text-lg">{result.age} months</p>
+      <div className="space-y-8 p-6 md:p-8">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm text-slate-500">Age</p>
+            <p className="mt-1 text-xl font-semibold text-slate-900">{result.age} months</p>
           </div>
-          <div>
-            <p className="text-gray-600 font-semibold">Sex</p>
-            <p className="text-lg">{result.sex === 'M' ? 'Male' : 'Female'}</p>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm text-slate-500">Sex</p>
+            <p className="mt-1 text-xl font-semibold text-slate-900">{result.sex === 'M' ? 'Male' : 'Female'}</p>
           </div>
-          <div>
-            <p className="text-gray-600 font-semibold">Weight</p>
-            <p className="text-lg">{result.weight} kg</p>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm text-slate-500">Weight / Height</p>
+            <p className="mt-1 text-xl font-semibold text-slate-900">
+              {result.weight} kg / {result.height} cm
+            </p>
           </div>
-          <div>
-            <p className="text-gray-600 font-semibold">Height</p>
-            <p className="text-lg">{result.height} cm</p>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm text-slate-500">BMI / MUAC</p>
+            <p className="mt-1 text-xl font-semibold text-slate-900">
+              {result.bmi} / {result.muac} cm
+            </p>
           </div>
         </div>
 
-        {/* Analysis Results */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Metrics */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-bold text-gray-800 mb-4">Anthropometric Metrics</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">BMI:</span>
-                <span className="font-semibold text-lg">{result.bmi}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">MUAC:</span>
-                <span className="font-semibold text-lg">{result.muac} cm</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Status */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-bold text-gray-800 mb-4">Assessment Status</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">Nutrition Status:</span>
-                <span className={`font-bold text-lg ${getStatusColor(result.nutritionStatus)}`}>
+        <div className="grid gap-6 xl:grid-cols-2">
+          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-900">Assessment Status</h3>
+            <div className="mt-4 space-y-3 text-sm text-slate-700">
+              <div className="flex items-center justify-between gap-3">
+                <span>Nutrition Status</span>
+                <span className={`rounded-full px-3 py-1 text-sm font-semibold ${getStatusColor(result.nutritionStatus)}`}>
                   {result.nutritionStatus}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">Risk Level:</span>
-                <span className="font-bold">{result.riskLevel}</span>
+              <div className="flex items-center justify-between gap-3">
+                <span>Overall Risk</span>
+                <span className="font-semibold">{result.riskLevel}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span>Alerts</span>
+                <span className="font-semibold">{alertCount} findings</span>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Risk Alert */}
-        <div
-          className={`border-2 rounded-lg p-4 mb-6 ${getRiskColor(result.riskLevel)}`}
-        >
-          <h3 className="font-bold mb-2">Risk Assessment</h3>
-          <p>{result.classification}</p>
-        </div>
-
-        {/* Recommendations */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="font-bold text-blue-900 mb-2">Medical Recommendation</h3>
-            <p className="text-blue-800">{result.recommendation}</p>
-          </div>
-
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-            <h3 className="font-bold text-purple-900 mb-2">Referral Suggestion</h3>
-            <p className="text-purple-800">{result.referralSuggestion}</p>
+          <div className={`rounded-3xl border-2 p-5 ${getRiskColor(result.riskLevel)}`}>
+            <h3 className="text-lg font-semibold">Clinical Interpretation</h3>
+            <p className="mt-3 text-sm leading-6">{result.classification}</p>
+            <p className="mt-3 text-sm leading-6">{result.reportSummary}</p>
           </div>
         </div>
 
-        {/* Timestamp */}
-        <p className="text-gray-500 text-xs mt-6 pt-4 border-t">
-          Report generated: {new Date(result.timestamp).toLocaleString()}
-        </p>
+        <div>
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-lg font-semibold text-slate-900">WHO Traffic-Lights</h3>
+            <p className="text-sm text-slate-500">Estimated z-score style classification</p>
+          </div>
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            {scoreCards.map(({ label, score }) => (
+              <div key={label} className={`rounded-2xl border p-4 ${getTrafficColor(score.label)}`}>
+                <p className="text-sm font-medium">{label}</p>
+                <p className="mt-2 text-2xl font-semibold">{score.value}</p>
+                <p className="mt-1 text-xs leading-5">{score.label}: {score.interpretation}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
+            <h3 className="text-lg font-semibold text-emerald-900">Medical Recommendation</h3>
+            <p className="mt-3 text-sm leading-6 text-emerald-900">{result.recommendation}</p>
+          </div>
+
+          <div className="rounded-3xl border border-indigo-100 bg-indigo-50 p-5">
+            <h3 className="text-lg font-semibold text-indigo-900">Referral Suggestion</h3>
+            <p className="mt-3 text-sm leading-6 text-indigo-900">{result.referralSuggestion}</p>
+          </div>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <h3 className="text-lg font-semibold text-slate-900">Physical Sign Alerts</h3>
+            <ul className="mt-3 space-y-2 text-sm text-slate-700">
+              {result.physicalSignAlerts.length > 0 ? (
+                result.physicalSignAlerts.map((alert) => <li key={alert}>• {alert}</li>)
+              ) : (
+                <li>• No physical sign alerts reported</li>
+              )}
+            </ul>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <h3 className="text-lg font-semibold text-slate-900">Vital Sign Alerts</h3>
+            <ul className="mt-3 space-y-2 text-sm text-slate-700">
+              {result.vitalSignAlerts.length > 0 ? (
+                result.vitalSignAlerts.map((alert) => <li key={alert}>• {alert}</li>)
+              ) : (
+                <li>• No vital sign alerts reported</li>
+              )}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
