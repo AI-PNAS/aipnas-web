@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import ChildList from '@/app/components/ChildList';
 
 const portals = [
@@ -50,9 +51,12 @@ export default function Home() {
 
       <header className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
-          <div>
+          <div className="flex items-center gap-3">
+            <Image src="/logo-aipnas.svg" alt="AI-PNAS" width={44} height={44} className="h-11 w-11 rounded-xl border border-white/15 bg-white/10 p-1" />
+            <div>
             <p className="text-[11px] uppercase tracking-[0.45em] text-cyan-200">AI-PNAS</p>
             <h1 className="text-lg font-semibold text-white md:text-2xl">Pediatric nutrition platform</h1>
+            </div>
           </div>
 
           <nav className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
@@ -62,9 +66,14 @@ export default function Home() {
             <a href="#founders" className="transition hover:text-white">Founders</a>
           </nav>
 
-          <Link href="/register" className="rounded-full bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
-            Start
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/login" className="rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">
+              Sign In
+            </Link>
+            <Link href="/login" className="rounded-full bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+              Create Account
+            </Link>
+          </div>
         </div>
       </header>
 
