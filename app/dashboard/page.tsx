@@ -23,6 +23,12 @@ interface ChildRecord {
   createdAt: string;
 }
 
+const childStories = [
+  { src: '/child-nutrition-1.jpg', alt: 'Child nutrition assessment with caregiver' },
+  { src: '/child-nutrition-2.jpg', alt: 'Child receiving care and nutrition support' },
+  { src: '/child-nutrition-3.jpg', alt: 'Community child nutrition monitoring' },
+];
+
 function PublicDashboardPreview() {
   const features = [
     ['Growth trends', 'Track measurements over time'],
@@ -69,6 +75,18 @@ function PublicDashboardPreview() {
               <div className="mt-3 flex justify-between text-xs text-slate-500"><span>Jan</span><span>Jun</span></div>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">{features.map(([title, description], index) => <div key={title} className="dashboard-feature rounded-2xl border border-white/10 bg-white/[0.05] p-4" style={{ animationDelay: `${index * 180 + 400}ms` }}><p className="text-sm font-semibold text-white">{title}</p><p className="mt-2 text-xs leading-5 text-slate-400">{description}</p></div>)}</div>
+          </div>
+        </section>
+
+        <section className="mt-16 border-t border-white/10 pt-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-teal-300">Visible before sign in</p>
+          <h2 className="mt-3 text-2xl font-semibold">Every difficult case deserves attention.</h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {childStories.map((story, index) => (
+              <div key={story.src} className="child-story-card relative aspect-[4/3] overflow-hidden rounded-2xl" style={{ animationDelay: `${index * 180 + 600}ms` }}>
+                <Image src={story.src} alt={story.alt} fill sizes="(max-width: 640px) 100vw, 33vw" className="object-cover transition duration-700 hover:scale-105" />
+              </div>
+            ))}
           </div>
         </section>
       </div>

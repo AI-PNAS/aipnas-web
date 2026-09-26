@@ -15,6 +15,12 @@ const services = [
   { title: 'Assessment History', description: 'Review stored results and historical records in one place.' },
 ];
 
+const childStories = [
+  { src: '/child-nutrition-1.jpg', alt: 'Child nutrition assessment with caregiver', label: 'Early visibility' },
+  { src: '/child-nutrition-2.jpg', alt: 'Child receiving care and nutrition support', label: 'Focused support' },
+  { src: '/child-nutrition-3.jpg', alt: 'Community child nutrition monitoring', label: 'Community care' },
+];
+
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
@@ -132,6 +138,26 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="child-story-section border-b border-slate-200 bg-[#071a23] text-white">
+        <div className="mx-auto max-w-7xl px-6 py-16 md:px-10">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.28em] text-teal-300">Why early action matters</p>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">Make difficult nutrition cases visible sooner.</h2>
+            <p className="mt-4 text-base leading-7 text-slate-300">AI PNAS helps care teams turn measurements into a clear next step for every child.</p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {childStories.map((story, index) => (
+              <figure key={story.src} className="child-story-card" style={{ animationDelay: `${index * 180}ms` }}>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-800">
+                  <Image src={story.src} alt={story.alt} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition duration-700 hover:scale-105" />
+                </div>
+                <figcaption className="mt-3 text-sm font-semibold text-teal-100">{story.label}</figcaption>
+              </figure>
+            ))}
           </div>
         </div>
       </section>
