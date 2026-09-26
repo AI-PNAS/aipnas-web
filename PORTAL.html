@@ -177,6 +177,65 @@ button:hover {
   border-left-color: #ef4444;
 }
 
+.care-story {
+  margin-top: 30px;
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+}
+
+.care-story h2 {
+  margin-bottom: 6px;
+  color: #f4c430;
+}
+
+.care-story p {
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.story-gallery {
+  display: grid;
+  grid-template-columns: 0.8fr 1.25fr 0.8fr;
+  align-items: center;
+  gap: 14px;
+  min-height: 260px;
+  margin-top: 18px;
+}
+
+.story-image {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+  animation: story-float 5s ease-in-out infinite;
+}
+
+.story-image-main {
+  height: 260px;
+  border-color: #f4c430;
+  animation-delay: -1.5s;
+}
+
+.story-image-left {
+  border-color: #d62828;
+  animation-delay: -3s;
+}
+
+.story-image-right {
+  border-color: #168a45;
+  animation-delay: -4s;
+}
+
+@keyframes story-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.015); }
+}
+
 @media (max-width: 760px) {
   header { align-items: flex-start; flex-direction: column; }
   header h1 { font-size: 21px; }
@@ -185,6 +244,12 @@ button:hover {
   .sidebar h2 { margin-bottom: 10px; }
   .nav-item { display: inline-block; margin: 4px 4px 4px 0; padding: 9px; }
   .main { padding: 18px; }
+  .story-gallery { grid-template-columns: 1fr; min-height: 0; }
+  .story-image, .story-image-main { height: 220px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-image { animation: none; }
 }
 </style>
 </head>
@@ -231,6 +296,16 @@ button:hover {
         <p>--</p>
       </div>
     </div>
+
+    <section class="care-story" aria-labelledby="care-story-title">
+      <h2 id="care-story-title">Why early nutrition visibility matters</h2>
+      <p>Keep difficult child nutrition cases visible to families and care teams before sign-in.</p>
+      <div class="story-gallery">
+        <img class="story-image story-image-left" src="public/images/aipnas-logo.png/a.png" alt="Child nutrition care story" />
+        <img class="story-image story-image-main" src="public/images/aipnas-logo.png/ai.png" alt="Child receiving nutrition care" />
+        <img class="story-image story-image-right" src="public/images/aipnas-logo.png/b.png" alt="Community child nutrition monitoring" />
+      </div>
+    </section>
 
     <!-- FORM -->
     <div id="register" class="form">

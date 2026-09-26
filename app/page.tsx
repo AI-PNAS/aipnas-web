@@ -16,9 +16,9 @@ const services = [
 ];
 
 const childStories = [
-  { src: '/child-nutrition-1.jpg', alt: 'Child nutrition assessment with caregiver', label: 'Early visibility' },
-  { src: '/child-nutrition-2.jpg', alt: 'Child receiving care and nutrition support', label: 'Focused support' },
-  { src: '/child-nutrition-3.jpg', alt: 'Community child nutrition monitoring', label: 'Community care' },
+  { src: '/public/images/aipnas-logo.png/a.png', alt: 'Child nutrition assessment with caregiver', label: 'Early visibility' },
+  { src: '/public/images/aipnas-logo.png/ai.png', alt: 'Child receiving care and nutrition support', label: 'Focused support' },
+  { src: '/public/images/aipnas-logo.png/b.png', alt: 'Community child nutrition monitoring', label: 'Community care' },
 ];
 
 export default function HomePage() {

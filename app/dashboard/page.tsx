@@ -24,9 +24,9 @@ interface ChildRecord {
 }
 
 const childStories = [
-  { src: '/child-nutrition-1.jpg', alt: 'Child nutrition assessment with caregiver' },
-  { src: '/child-nutrition-2.jpg', alt: 'Child receiving care and nutrition support' },
-  { src: '/child-nutrition-3.jpg', alt: 'Community child nutrition monitoring' },
+  { src: '/public/images/aipnas-logo.png/a.png', alt: 'Child nutrition assessment with caregiver' },
+  { src: '/public/images/aipnas-logo.png/ai.png', alt: 'Child receiving care and nutrition support' },
+  { src: '/public/images/aipnas-logo.png/b.png', alt: 'Community child nutrition monitoring' },
 ];
 
 function PublicDashboardPreview() {
