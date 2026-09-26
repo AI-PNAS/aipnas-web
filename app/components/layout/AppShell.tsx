@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import BrandMark from '@/app/components/branding/BrandMark';
 
 type NavItem = { href: string; label: string };
 
@@ -21,10 +22,12 @@ export default function AppShell({ title, subtitle, navItems, actions, children 
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 md:px-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-teal-700">AI PNAS</p>
-              <h1 className="text-2xl font-semibold">{title}</h1>
-              <p className="text-sm text-slate-600">{subtitle}</p>
+            <div className="space-y-2">
+              <BrandMark withLink />
+              <div>
+                <h1 className="text-2xl font-semibold">{title}</h1>
+                <p className="text-sm text-slate-600">{subtitle}</p>
+              </div>
             </div>
             {actions}
           </div>
