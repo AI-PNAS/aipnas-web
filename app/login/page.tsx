@@ -2,17 +2,20 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
 
 type AuthMode = 'login' | 'register';
+type Role = 'family' | 'health_professional';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
-  const [mode, setMode] = useState<AuthMode>('login');
+  const searchParams = useSearchParams();
+  const [mode, setMode] = useState<AuthMode>(() => searchParams.get('mode') === 'register' ? 'register' : 'login');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [loginForm, setLoginForm] = useState({
     email: '',
@@ -24,7 +27,16 @@ export default function LoginPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    role: 'family' as Role,
   });
+
+  const switchMode = (nextMode: AuthMode) => {
+    setMode(nextMode);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('mode', nextMode);
+    router.replace(`/login?${params.toString()}`);
+  };
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -44,9 +56,8 @@ export default function LoginPage() {
         throw new Error(result.message || 'Failed to sign in');
       }
 
-      localStorage.setItem('aipnas_user', JSON.stringify(result.user));
       setSuccess('Signed in successfully. Redirecting...');
-      setTimeout(() => router.push('/'), 700);
+      setTimeout(() => router.push('/dashboard'), 500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to sign in');
     } finally {
@@ -64,6 +75,11 @@ export default function LoginPage() {
       return;
     }
 
+    if (registerForm.password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -74,6 +90,7 @@ export default function LoginPage() {
           fullName: registerForm.fullName,
           email: registerForm.email,
           password: registerForm.password,
+          role: registerForm.role,
         }),
       });
 
@@ -82,10 +99,8 @@ export default function LoginPage() {
         throw new Error(result.message || 'Failed to create account');
       }
 
-      setSuccess('Account created. You can sign in now.');
-      setMode('login');
-      setLoginForm({ email: registerForm.email, password: '' });
-      setRegisterForm({ fullName: '', email: '', password: '', confirmPassword: '' });
+      setSuccess('Account created successfully. Redirecting...');
+      setTimeout(() => router.push('/dashboard'), 600);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create account');
     } finally {
@@ -100,14 +115,7 @@ export default function LoginPage() {
         <div className="grid gap-8 rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-slate-950/40 backdrop-blur-xl md:grid-cols-[1fr_1fr] md:p-8">
           <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
             <div className="mx-auto max-w-[360px]">
-              <Image
-                src="/logo-aipnas.svg"
-                alt="AI-PNAS logo"
-                width={360}
-                height={360}
-                className="h-auto w-full"
-                priority
-              />
+              <Image src="/logo-aipnas.svg" alt="AI-PNAS logo" width={360} height={360} className="h-auto w-full" priority />
             </div>
             <h1 className="mt-4 text-2xl font-semibold text-white">Welcome to AI-PNAS</h1>
             <p className="mt-2 text-sm leading-7 text-slate-300">
@@ -123,18 +131,10 @@ export default function LoginPage() {
 
           <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
             <div className="mb-5 inline-flex rounded-full border border-white/15 bg-white/5 p-1 text-sm">
-              <button
-                type="button"
-                onClick={() => setMode('login')}
-                className={`rounded-full px-4 py-2 font-semibold transition ${mode === 'login' ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:text-white'}`}
-              >
+              <button type="button" onClick={() => switchMode('login')} className={`rounded-full px-4 py-2 font-semibold transition ${mode === 'login' ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:text-white'}`}>
                 Sign In
               </button>
-              <button
-                type="button"
-                onClick={() => setMode('register')}
-                className={`rounded-full px-4 py-2 font-semibold transition ${mode === 'register' ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:text-white'}`}
-              >
+              <button type="button" onClick={() => switchMode('register')} className={`rounded-full px-4 py-2 font-semibold transition ${mode === 'register' ? 'bg-cyan-400 text-slate-950' : 'text-slate-300 hover:text-white'}`}>
                 Create Account
               </button>
             </div>
@@ -146,33 +146,28 @@ export default function LoginPage() {
               <form onSubmit={handleLogin} className="space-y-4">
                 <label className="block text-sm font-medium text-slate-200">
                   Email
-                  <input
-                    type="email"
-                    required
-                    value={loginForm.email}
-                    onChange={(event) => setLoginForm((prev) => ({ ...prev, email: event.target.value }))}
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30"
-                    placeholder="you@example.com"
-                  />
+                  <input type="email" required value={loginForm.email} onChange={(event) => setLoginForm((prev) => ({ ...prev, email: event.target.value }))} className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30" placeholder="you@example.com" />
                 </label>
 
                 <label className="block text-sm font-medium text-slate-200">
                   Password
-                  <input
-                    type="password"
-                    required
-                    value={loginForm.password}
-                    onChange={(event) => setLoginForm((prev) => ({ ...prev, password: event.target.value }))}
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30"
-                    placeholder="Enter your password"
-                  />
+                  <div className="mt-2 flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 focus-within:border-cyan-300 focus-within:ring-2 focus-within:ring-cyan-300/30">
+                    <input type={showPassword ? 'text' : 'password'} required value={loginForm.password} onChange={(event) => setLoginForm((prev) => ({ ...prev, password: event.target.value }))} className="w-full bg-transparent text-white outline-none placeholder:text-slate-400" placeholder="Enter your password" />
+                    <button type="button" onClick={() => setShowPassword((value) => !value)} className="text-xs font-semibold text-cyan-200 underline-offset-2 hover:underline">
+                      {showPassword ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
                 </label>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full rounded-xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-400"
-                >
+                <div className="flex items-center justify-between text-sm text-slate-300">
+                  <label className="flex items-center gap-2">
+                    <input type="checkbox" className="rounded border-white/20 bg-white/5" />
+                    Remember me
+                  </label>
+                  <Link href="/" className="text-cyan-200 hover:text-cyan-100">Forgot password?</Link>
+                </div>
+
+                <button type="submit" disabled={isLoading} className="w-full rounded-xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-400">
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </button>
               </form>
@@ -180,59 +175,35 @@ export default function LoginPage() {
               <form onSubmit={handleRegister} className="space-y-4">
                 <label className="block text-sm font-medium text-slate-200">
                   Full Name
-                  <input
-                    type="text"
-                    required
-                    value={registerForm.fullName}
-                    onChange={(event) => setRegisterForm((prev) => ({ ...prev, fullName: event.target.value }))}
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30"
-                    placeholder="Your full name"
-                  />
+                  <input type="text" required value={registerForm.fullName} onChange={(event) => setRegisterForm((prev) => ({ ...prev, fullName: event.target.value }))} className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30" placeholder="Your full name" />
                 </label>
 
                 <label className="block text-sm font-medium text-slate-200">
                   Email
-                  <input
-                    type="email"
-                    required
-                    value={registerForm.email}
-                    onChange={(event) => setRegisterForm((prev) => ({ ...prev, email: event.target.value }))}
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30"
-                    placeholder="you@example.com"
-                  />
+                  <input type="email" required value={registerForm.email} onChange={(event) => setRegisterForm((prev) => ({ ...prev, email: event.target.value }))} className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30" placeholder="you@example.com" />
                 </label>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block text-sm font-medium text-slate-200">
+                    Password
+                    <input type="password" required minLength={8} value={registerForm.password} onChange={(event) => setRegisterForm((prev) => ({ ...prev, password: event.target.value }))} className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30" placeholder="At least 8 characters" />
+                  </label>
+
+                  <label className="block text-sm font-medium text-slate-200">
+                    Confirm Password
+                    <input type="password" required minLength={8} value={registerForm.confirmPassword} onChange={(event) => setRegisterForm((prev) => ({ ...prev, confirmPassword: event.target.value }))} className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30" placeholder="Repeat password" />
+                  </label>
+                </div>
 
                 <label className="block text-sm font-medium text-slate-200">
-                  Password
-                  <input
-                    type="password"
-                    required
-                    minLength={8}
-                    value={registerForm.password}
-                    onChange={(event) => setRegisterForm((prev) => ({ ...prev, password: event.target.value }))}
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30"
-                    placeholder="At least 8 characters"
-                  />
+                  Role
+                  <select value={registerForm.role} onChange={(event) => setRegisterForm((prev) => ({ ...prev, role: event.target.value as Role }))} className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30">
+                    <option value="family" className="bg-slate-900">Family</option>
+                    <option value="health_professional" className="bg-slate-900">Health Professional</option>
+                  </select>
                 </label>
 
-                <label className="block text-sm font-medium text-slate-200">
-                  Confirm Password
-                  <input
-                    type="password"
-                    required
-                    minLength={8}
-                    value={registerForm.confirmPassword}
-                    onChange={(event) => setRegisterForm((prev) => ({ ...prev, confirmPassword: event.target.value }))}
-                    className="mt-2 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30"
-                    placeholder="Repeat password"
-                  />
-                </label>
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full rounded-xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-400"
-                >
+                <button type="submit" disabled={isLoading} className="w-full rounded-xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:bg-slate-400">
                   {isLoading ? 'Creating account...' : 'Create Account'}
                 </button>
               </form>
@@ -241,5 +212,13 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-[#07111f]" />}>
+      <LoginForm />
+    </Suspense>
   );
 }

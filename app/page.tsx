@@ -1,226 +1,236 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import ChildList from '@/app/components/ChildList';
 
-const portals = [
-  {
-    title: 'Parent Portal',
-    subtitle: 'Simple intake and screening for families',
-    description: 'Start a child profile, enter measurements, and receive a clear nutrition report.',
-    href: '/register',
-    accent: 'text-cyan-200',
-  },
-  {
-    title: 'Health Professional Portal',
-    subtitle: 'Clinical assessment and review',
-    description: 'Capture vitals, history, signs, and analysis in one guided workflow.',
-    href: '/register',
-    accent: 'text-emerald-200',
-  },
-  {
-    title: 'Organization Portal',
-    subtitle: 'Oversight and program tracking',
-    description: 'Monitor child records, risk trends, and reporting from the live dashboard.',
-    href: '#children',
-    accent: 'text-violet-200',
-  },
+const steps = [
+  { title: 'Register child', description: 'Create a child profile with basic demographics and health context.' },
+  { title: 'Capture measurements', description: 'Enter or estimate weight, height, and MUAC for analysis.' },
+  { title: 'AI-assisted review', description: 'Use the pediatric nutrition engine to assess growth patterns and risk.' },
+  { title: 'Professional review', description: 'Clinicians verify the findings and determine follow-up actions.' },
 ];
 
-const founders = [
-  {
-    name: 'Belay Kassanew',
-    role: 'Public Health Student',
-    strengths: 'Nutrition, Public Health, Health Systems, Community Health',
-  },
-  {
-    name: 'Nahom',
-    role: 'Data Science Student',
-    strengths: 'Artificial Intelligence, Machine Learning, Data Analytics',
-  },
-  {
-    name: 'Addisu Yirdaw',
-    role: 'Computer Science Student',
-    strengths: 'Software Development, Mobile Applications, System Architecture',
-  },
+const services = [
+  { title: 'Pediatric Nutrition Assessment', description: 'Screen growth and nutritional risk with real back-end analysis.' },
+  { title: 'Growth Monitoring', description: 'Track a child’s trend over time and compare history.' },
+  { title: 'AI-assisted Measurement', description: 'Support capture with guidance and confidence checks.' },
+  { title: 'Assessment History', description: 'Review stored results and historical records in one place.' },
 ];
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#06111c] text-slate-100">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_top_right,rgba(16,185,129,0.14),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.12),transparent_30%)]" />
-
-      <header className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
-          <div className="flex items-center gap-3">
-            <Image src="/logo-aipnas.svg" alt="AI-PNAS" width={44} height={44} className="h-11 w-11 rounded-xl border border-white/15 bg-white/10 p-1" />
-            <div>
-            <p className="text-[11px] uppercase tracking-[0.45em] text-cyan-200">AI-PNAS</p>
-            <h1 className="text-lg font-semibold text-white md:text-2xl">Pediatric nutrition platform</h1>
-            </div>
-          </div>
-
-          <nav className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
-            <a href="#overview" className="transition hover:text-white">Overview</a>
-            <a href="#portals" className="transition hover:text-white">Portals</a>
-            <a href="#children" className="transition hover:text-white">Dashboard</a>
-            <a href="#founders" className="transition hover:text-white">Founders</a>
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <Link href="/login" className="rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">
-              Sign In
-            </Link>
-            <Link href="/login" className="rounded-full bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
-              Create Account
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <section id="overview" className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-[1.05fr_0.95fr] md:px-10 md:py-16">
-        <div className="space-y-6">
-          <div className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-100">
-            Privacy-first, three-portal healthcare infrastructure
-          </div>
-
-          <div className="space-y-4">
-            <h2 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-white md:text-5xl">
-              AI-PNAS supports child screening, clinical review, and organization oversight.
-            </h2>
-            <p className="max-w-2xl text-base leading-7 text-slate-300 md:text-lg">
-              The home page now acts as a live entry point to the backend-driven workflow, not a text-only brochure.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[
-              ['Live backend', 'Reads saved children and risk levels from the database.'],
-              ['Functional flow', 'Registration saves intake and generates analysis.'],
-              ['WHO output', 'Auto-calculated score flags and recommendations.'],
-            ].map(([title, description]) => (
-              <div key={title} className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-                <p className="text-sm font-semibold text-cyan-200">{title}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-300">{description}</p>
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <section className="relative overflow-hidden border-b border-slate-200 bg-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(13,148,136,0.12),transparent_30%),radial-gradient(circle_at_top_right,rgba(14,165,233,0.10),transparent_30%)]" />
+        <div className="relative mx-auto max-w-7xl px-6 py-10 md:px-10 md:py-14">
+          <header className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-teal-200 bg-teal-50 p-1">
+                <Image src="/logo-aipnas.svg" alt="AI-PNAS logo" width={40} height={40} priority />
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/40 backdrop-blur-xl md:p-8">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-cyan-200">Status</p>
-              <h3 className="mt-2 text-2xl font-semibold text-white">Three portals ready</h3>
-            </div>
-            <div className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">Online</div>
-          </div>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            {[
-              ['Parent Portal', 'Child intake and quick screening'],
-              ['Health Professional Portal', 'Clinical assessment and review'],
-              ['Organization Portal', 'Operations and monitoring'],
-              ['Backend API', 'Database persistence and analysis'],
-            ].map(([label, description]) => (
-              <div key={label} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p className="text-sm font-semibold text-white">{label}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-300">{description}</p>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-teal-700">AI PNAS</p>
+                <p className="text-sm font-medium text-slate-700">Pediatric Nutrition AI</p>
               </div>
-            ))}
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/register" className="rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-slate-200">
-              Open Intake
             </Link>
-            <a href="#children" className="rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">
-              View Records
-            </a>
+
+            <div className="hidden items-center gap-7 text-sm font-medium text-slate-600 md:flex">
+              <Link href="/" className="text-slate-900">Home</Link>
+              <Link href="/about" className="hover:text-slate-900">About</Link>
+              <Link href="/services" className="hover:text-slate-900">Services</Link>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link href="/login" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
+                Login
+              </Link>
+              <Link href="/login?mode=register" className="rounded-full bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-600">
+                Create Account
+              </Link>
+            </div>
+          </header>
+
+          <div className="mt-16 grid items-center gap-12 md:grid-cols-[1.15fr_0.85fr]">
+            <div>
+              <div className="inline-flex rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700">
+                AI-assisted pediatric nutrition assessment
+              </div>
+              <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-900 md:text-6xl">
+                Supporting safer child growth monitoring.
+              </h1>
+              <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
+                AI PNAS helps families and health professionals review child measurements, monitor nutritional risk,
+                and support follow-up with AI-assisted screening and professional oversight.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link href="/login?mode=register" className="rounded-full bg-teal-700 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-600">
+                  Start Assessment
+                </Link>
+                <Link href="/about" className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
+                  Learn How It Works
+                </Link>
+              </div>
+              <div className="mt-10 grid max-w-lg gap-4 sm:grid-cols-3">
+                {[
+                  ['WHO-based', 'growth standards'],
+                  ['AI-assisted', 'measurement support'],
+                  ['Human review', 'clinical oversight'],
+                ].map(([title, description]) => (
+                  <div key={title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm font-semibold text-slate-900">{title}</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-600">{description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-slate-200 bg-slate-900 p-6 text-white shadow-xl shadow-slate-200">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-teal-300">Nutrition assessment</p>
+                  <h2 className="mt-2 text-2xl font-semibold">Child Growth Profile</h2>
+                </div>
+                <div className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
+                  Active
+                </div>
+              </div>
+
+              <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-500/15 text-2xl">👧</div>
+                  <div>
+                    <p className="font-semibold">Child profile</p>
+                    <p className="text-sm text-slate-300">24 months · Female</p>
+                  </div>
+                </div>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  {[
+                    ['Weight', '10.8 kg'],
+                    ['Height', '84.5 cm'],
+                    ['MUAC', '14.2 cm'],
+                  ].map(([label, value]) => (
+                    <div key={label} className="rounded-xl border border-white/10 bg-slate-800 p-3">
+                      <p className="text-xs text-slate-400">{label}</p>
+                      <p className="mt-2 text-base font-semibold text-white">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-slate-300">Growth assessment</p>
+                  <p className="text-sm font-semibold text-emerald-300">Normal range</p>
+                </div>
+                <div className="mt-4 flex h-16 items-end gap-2">
+                  {[35, 52, 56, 68, 82].map((height, index) => (
+                    <span
+                      key={index}
+                      className="w-full rounded-t-xl bg-gradient-to-t from-teal-500 to-cyan-300"
+                      style={{ height: `${height}%` }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="portals" className="mx-auto max-w-7xl px-6 py-4 md:px-10">
-        <div className="grid gap-5 md:grid-cols-3">
-          {portals.map((portal) => (
-            <div key={portal.title} className="rounded-[1.75rem] border border-white/10 bg-slate-900/75 p-6 shadow-xl shadow-slate-950/30">
-              <p className={`text-sm uppercase tracking-[0.35em] ${portal.accent}`}>{portal.title}</p>
-              <h3 className="mt-2 text-xl font-semibold text-white">{portal.subtitle}</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-300">{portal.description}</p>
-              <Link href={portal.href} className="mt-5 inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">
-                Open portal
-              </Link>
+      <section className="mx-auto max-w-7xl px-6 py-16 md:px-10">
+        <div className="text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-teal-700">How it works</p>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">A simple flow for child growth assessment.</h2>
+        </div>
+
+        <div className="mt-10 grid gap-6 md:grid-cols-4">
+          {steps.map((step, index) => (
+            <div key={step.title} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-teal-100 text-sm font-semibold text-teal-700">
+                {index + 1}
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900">{step.title}</h3>
+              <p className="mt-3 text-base leading-7 text-slate-600">{step.description}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="children" className="mx-auto max-w-7xl px-6 py-12 md:px-10">
-        <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-cyan-200">Dashboard</p>
-            <h3 className="mt-2 text-3xl font-semibold text-white">Live child records</h3>
-            <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-400">
-              These records are loaded directly from the backend and show current nutrition status, risk level, and analysis history.
-            </p>
-          </div>
-          <Link href="/register" className="w-fit rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
-            Add child
-          </Link>
-        </div>
-
-        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-4 shadow-2xl shadow-slate-950/30 md:p-6">
-          <ChildList />
-        </div>
-      </section>
-
-      <section id="founders" className="mx-auto max-w-7xl px-6 py-10 md:px-10">
-        <div className="rounded-[2rem] border border-white/10 bg-slate-900/75 p-6 md:p-8">
-          <div className="max-w-2xl">
-            <p className="text-sm uppercase tracking-[0.35em] text-cyan-200">Founder Background</p>
-            <h3 className="mt-2 text-3xl font-semibold text-white">Key strengths across health, AI, and engineering</h3>
-            <p className="mt-3 text-sm leading-7 text-slate-400">
-              The team combines public health, data science, and software architecture to support clinical workflows and operational scale.
-            </p>
+      <section className="bg-slate-900 text-white">
+        <div className="mx-auto max-w-7xl px-6 py-16 md:px-10">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-teal-300">Key services</p>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">Support the full child nutrition workflow.</h2>
+            </div>
+            <Link href="/services" className="hidden rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 md:inline-flex">
+              Explore services
+            </Link>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {founders.map((founder) => (
-              <div key={founder.name} className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                <p className="text-lg font-semibold text-white">{founder.name}</p>
-                <p className="mt-1 text-sm text-cyan-200">{founder.role}</p>
-                <p className="mt-3 text-sm leading-7 text-slate-300">{founder.strengths}</p>
+          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {services.map((service) => (
+              <div key={service.title} className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
+                <h3 className="text-xl font-semibold">{service.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-300">{service.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="workflow" className="mx-auto max-w-7xl px-6 py-8 md:px-10 md:pb-14">
-        <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl md:p-8">
-            <p className="text-sm uppercase tracking-[0.35em] text-cyan-200">Workflow</p>
-            <div className="mt-5 space-y-4 text-sm leading-7 text-slate-300">
-              <p>1. Register a child and capture the intake.</p>
-              <p>2. Save the record to the database.</p>
-              <p>3. Run analysis and generate a report.</p>
-              <p>4. Review the live record and guidance on the dashboard.</p>
+      <section className="mx-auto max-w-5xl px-6 py-16 md:px-10">
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm md:p-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-teal-700">AI + Human</p>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">AI assists. Health professionals decide.</h2>
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+              <p className="font-semibold text-slate-900">AI-assisted screening</p>
+              <p className="mt-2 text-sm leading-7 text-slate-600">Analyze anthropometric measurements and review growth-related indicators.</p>
             </div>
-          </div>
-
-          <div className="rounded-[2rem] border border-white/10 bg-slate-900/75 p-6 md:p-8">
-            <p className="text-sm uppercase tracking-[0.35em] text-cyan-200">WHO Growth Chart</p>
-            <div className="mt-5 space-y-4 text-sm leading-7 text-slate-300">
-              <p>• The app calculates growth-based z-scores from child age, sex, weight, height, BMI, and MUAC.</p>
-              <p>• Red, yellow, and green traffic lights show the nutritional status at a glance.</p>
-              <p>• Reports combine anthropometrics with clinical signs for a more complete assessment.</p>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+              <p className="font-semibold text-slate-900">Confidence information</p>
+              <p className="mt-2 text-sm leading-7 text-slate-600">Maintain transparency around measurement quality and AI support.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+              <p className="font-semibold text-slate-900">Manual verification</p>
+              <p className="mt-2 text-sm leading-7 text-slate-600">Allow trained professionals to confirm, edit, or override estimates.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+              <p className="font-semibold text-slate-900">Professional review</p>
+              <p className="mt-2 text-sm leading-7 text-slate-600">Keep decisions under appropriate clinical guidance and follow-up.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-white/10 bg-slate-950/70 py-8 text-center text-sm text-slate-400 backdrop-blur-xl">
-        © 2026 AI-PNAS — AI-Powered Pediatric Nutrition System
+      <section className="mx-auto max-w-5xl px-6 pb-16 md:px-10">
+        <div className="rounded-[2rem] border border-teal-100 bg-teal-50 p-8 text-center md:p-12">
+          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Start monitoring child growth with AI PNAS.</h2>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link href="/login?mode=register" className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+              Create Account
+            </Link>
+            <Link href="/login" className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
+              Sign In
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-sm text-slate-600 md:flex-row md:items-center md:justify-between md:px-10">
+          <div>
+            <p className="font-semibold text-slate-900">AI PNAS</p>
+            <p className="mt-1">AI-assisted pediatric nutritional assessment.</p>
+          </div>
+          <div className="flex flex-wrap gap-5">
+            <Link href="/about" className="hover:text-slate-900">About</Link>
+            <Link href="/services" className="hover:text-slate-900">Services</Link>
+            <Link href="#" className="hover:text-slate-900">Privacy</Link>
+            <Link href="#" className="hover:text-slate-900">Terms</Link>
+            <Link href="#" className="hover:text-slate-900">Contact</Link>
+          </div>
+        </div>
       </footer>
     </main>
   );

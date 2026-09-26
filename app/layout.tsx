@@ -1,20 +1,23 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "AI-PNAS - Pediatric Nutritional Assessment System",
-  description: "AI Powered Pediatric Nutritional Assessment System for detecting and classifying child malnutrition using WHO standards",
+  title: 'AI-PNAS | Pediatric Nutritional Assessment System',
+  description: 'AI-assisted pediatric nutrition assessment for growth monitoring and professional review.',
+  icons: {
+    icon: '/logo-aipnas.svg',
+  },
 };
 
 export default function RootLayout({
@@ -23,11 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="min-h-full bg-slate-50 text-slate-900">{children}</body>
     </html>
   );
 }

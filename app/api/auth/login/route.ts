@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { verifyPassword } from '@/lib/auth';
+import { getSessionCookieName, normalizeRole, signSessionPayload } from '@/lib/session';
 
 const loginSchema = z.object({
   email: z.string().trim().email('Valid email is required'),
@@ -27,6 +29,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const cookieStore = await cookies();
+    const sessionToken = signSessionPayload({
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      role: normalizeRole(user.role),
+    });
+
+    cookieStore.set({
+      name: getSessionCookieName(),
+      value: sessionToken,
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
     return NextResponse.json({
       success: true,
       message: 'Login successful.',
@@ -34,6 +54,7 @@ export async function POST(request: NextRequest) {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
+        role: normalizeRole(user.role),
       },
     });
   } catch (error) {

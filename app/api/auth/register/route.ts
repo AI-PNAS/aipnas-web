@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { hashPassword } from '@/lib/auth';
+import { getSessionCookieName, normalizeRole, signSessionPayload } from '@/lib/session';
 
 const registerSchema = z.object({
   fullName: z.string().trim().min(2, 'Full name is required').max(120),
   email: z.string().trim().email('Valid email is required'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
+  role: z.enum(['family', 'health_professional']).default('family'),
 });
 
 export async function POST(request: NextRequest) {
@@ -33,19 +36,44 @@ export async function POST(request: NextRequest) {
         fullName: payload.fullName,
         email: normalizedEmail,
         passwordHash: hashPassword(payload.password),
+        role: payload.role,
       },
       select: {
         id: true,
         fullName: true,
         email: true,
+        role: true,
         createdAt: true,
       },
+    });
+
+    const cookieStore = await cookies();
+    const sessionToken = signSessionPayload({
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      role: normalizeRole(user.role),
+    });
+
+    cookieStore.set({
+      name: getSessionCookieName(),
+      value: sessionToken,
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return NextResponse.json({
       success: true,
       message: 'Account created successfully.',
-      user,
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        role: normalizeRole(user.role),
+      },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
