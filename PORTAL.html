@@ -15,7 +15,7 @@
 }
 
 body {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  background: linear-gradient(135deg, #071a23, #12343a);
   color: white;
   min-height: 100vh;
   overflow-x: hidden;
@@ -23,16 +23,19 @@ body {
 
 /* ===== HEADER ===== */
 header {
-  padding: 20px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 header h1 {
-  font-size: 28px;
-  background: linear-gradient(90deg, #00d4ff, #7c3aed);
+  font-size: 24px;
+  background: linear-gradient(90deg, #f4c430, #22c55e);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -42,6 +45,21 @@ header h1 {
   display: grid;
   grid-template-columns: 260px 1fr;
   min-height: 100vh;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand img {
+  width: 48px;
+  height: 48px;
+  padding: 3px;
+  border: 3px solid transparent;
+  border-radius: 14px;
+  background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #d62828 0 33%, #f4c430 33% 66%, #168a45 66%) border-box;
 }
 
 /* ===== SIDEBAR ===== */
@@ -67,7 +85,12 @@ header h1 {
 }
 
 .nav-item:hover {
-  background: #2563eb;
+  background: #0f766e;
+}
+
+.nav-item a {
+  color: inherit;
+  text-decoration: none;
 }
 
 /* ===== MAIN ===== */
@@ -123,6 +146,10 @@ input {
   outline: none;
 }
 
+input:focus {
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.28);
+}
+
 button {
   padding: 12px 20px;
   border: none;
@@ -145,13 +172,31 @@ button:hover {
   border-left: 4px solid #22c55e;
   border-radius: 10px;
 }
+
+.result.error {
+  border-left-color: #ef4444;
+}
+
+@media (max-width: 760px) {
+  header { align-items: flex-start; flex-direction: column; }
+  header h1 { font-size: 21px; }
+  .container { display: block; }
+  .sidebar { border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .sidebar h2 { margin-bottom: 10px; }
+  .nav-item { display: inline-block; margin: 4px 4px 4px 0; padding: 9px; }
+  .main { padding: 18px; }
+}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🧠 AI-PNAS Medical Intelligence Dashboard</h1>
+  <div class="brand">
+    <img src="public/logo-aipnas.svg" alt="AI-PNAS logo" />
+    <h1>AI-PNAS Care Portal</h1>
+  </div>
+  <a href="/login" class="nav-item">Sign in</a>
 </header>
 
 <div class="container">
@@ -159,43 +204,43 @@ button:hover {
   <!-- SIDEBAR -->
   <div class="sidebar">
     <h2>Navigation</h2>
-    <div class="nav-item">🏠 Dashboard</div>
-    <div class="nav-item">➕ Register Child</div>
-    <div class="nav-item">📊 Analytics</div>
-    <div class="nav-item">⚠️ Risk Reports</div>
-    <div class="nav-item">⚙️ Settings</div>
+    <div class="nav-item"><a href="#dashboard">Dashboard</a></div>
+    <div class="nav-item"><a href="#register">Register Child</a></div>
+    <div class="nav-item"><a href="/children">Children</a></div>
+    <div class="nav-item"><a href="/services">Services</a></div>
+    <div class="nav-item"><a href="/about">About</a></div>
   </div>
 
   <!-- MAIN -->
   <div class="main">
 
     <!-- CARDS -->
-    <div class="cards">
+    <div id="dashboard" class="cards">
       <div class="card">
         <h3>Total Children</h3>
-        <p>128</p>
+        <p>--</p>
       </div>
 
       <div class="card">
         <h3>High Risk</h3>
-        <p>12</p>
+        <p>--</p>
       </div>
 
       <div class="card">
         <h3>Normal</h3>
-        <p>96</p>
+        <p>--</p>
       </div>
     </div>
 
     <!-- FORM -->
-    <div class="form">
+    <div id="register" class="form">
       <h2>Register Child (AI Analysis)</h2>
 
-      <input id="name" placeholder="Child Name"/>
-      <input id="age" placeholder="Age (months)"/>
-      <input id="weight" placeholder="Weight (kg)"/>
-      <input id="height" placeholder="Height (cm)"/>
-      <input id="muac" placeholder="MUAC (cm)"/>
+      <input id="name" placeholder="Child Name" autocomplete="off" required/>
+      <input id="age" type="number" min="0" max="60" step="1" placeholder="Age (months)" required/>
+      <input id="weight" type="number" min="0.1" step="0.1" placeholder="Weight (kg)" required/>
+      <input id="height" type="number" min="10" step="0.1" placeholder="Height (cm)" required/>
+      <input id="muac" type="number" min="1" step="0.1" placeholder="MUAC (cm)" required/>
 
       <button onclick="analyze()">Run AI Analysis</button>
 
@@ -207,11 +252,20 @@ button:hover {
 
 <script>
 function analyze() {
-  let name = document.getElementById("name").value;
-  let age = document.getElementById("age").value;
-  let weight = document.getElementById("weight").value;
-  let height = document.getElementById("height").value;
-  let muac = document.getElementById("muac").value;
+  const name = document.getElementById("name").value.trim();
+  const age = Number(document.getElementById("age").value);
+  const weight = Number(document.getElementById("weight").value);
+  const height = Number(document.getElementById("height").value);
+  const muac = Number(document.getElementById("muac").value);
+  const resultBox = document.getElementById("result");
+
+  resultBox.classList.remove("error");
+  if (!name || !Number.isFinite(age) || !Number.isFinite(weight) || !Number.isFinite(height) || !Number.isFinite(muac) || age > 60 || age < 0 || weight <= 0 || height <= 0 || muac <= 0) {
+    resultBox.classList.add("error");
+    resultBox.style.display = "block";
+    resultBox.textContent = "Enter valid child measurements before running the assessment.";
+    return;
+  }
 
   let status = "";
 
@@ -219,17 +273,15 @@ function analyze() {
   else if (muac < 12.5) status = "🟠 Moderate Acute Malnutrition (MAM)";
   else status = "🟢 Normal Nutrition";
 
-  let resultBox = document.getElementById("result");
   resultBox.style.display = "block";
-  resultBox.innerHTML = `
-    <h3>AI Result for ${name}</h3>
-    <p>Age: ${age} months</p>
-    <p>Weight: ${weight} kg</p>
-    <p>Height: ${height} cm</p>
-    <p>MUAC: ${muac} cm</p>
-    <hr/>
-    <h2>${status}</h2>
-  `;
+  resultBox.replaceChildren();
+  const title = document.createElement("h3");
+  title.textContent = `Assessment for ${name}`;
+  const details = document.createElement("p");
+  details.textContent = `Age: ${age} months | Weight: ${weight} kg | Height: ${height} cm | MUAC: ${muac} cm`;
+  const outcome = document.createElement("h2");
+  outcome.textContent = status;
+  resultBox.append(title, details, document.createElement("hr"), outcome);
 }
 </script>
 

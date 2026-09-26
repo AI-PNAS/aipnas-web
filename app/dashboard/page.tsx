@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Header from '@/app/components/Header';
 
 interface SessionUser {
   id: string;
@@ -80,6 +81,9 @@ export default function DashboardPage() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [children, setChildren] = useState<ChildRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [riskFilter, setRiskFilter] = useState('All');
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -94,11 +98,12 @@ export default function DashboardPage() {
         const childrenResponse = await fetch('/api/children', { cache: 'no-store' });
         const childrenData = await childrenResponse.json();
 
-        if (childrenResponse.ok && childrenData.success) {
-          setChildren(childrenData.children || []);
+        if (!childrenResponse.ok || !childrenData.success) {
+          throw new Error(childrenData.message || 'We could not load child records.');
         }
+        setChildren(childrenData.children || []);
       } catch {
-        // Swallow fetch/network issues and keep the UI in a valid state.
+        setError('We could not load child records. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -128,22 +133,25 @@ export default function DashboardPage() {
 
   const isProfessional = user.role === 'health_professional';
 
-  const summaryCards = isProfessional
-    ? [
-        { label: 'Children', value: children.length },
-        { label: 'Recent Assessments', value: children.length > 0 ? String(children.length) : '0' },
-        { label: 'Pending Reviews', value: '2' },
-        { label: 'Follow-up', value: '3' },
-      ]
-    : [
-        { label: 'My Children', value: children.length },
-        { label: 'Latest Assessment', value: children[0]?.nutritionStatus || 'Pending' },
-        { label: 'Growth Status', value: children[0]?.riskLevel || 'N/A' },
-        { label: 'Follow-up', value: 'Routine' },
-      ];
+  const filteredChildren = children.filter((child) => {
+    const matchesQuery = `${child.name} ${child.id} ${child.nutritionStatus || ''}`.toLowerCase().includes(query.trim().toLowerCase());
+    const matchesRisk = riskFilter === 'All' || child.riskLevel === riskFilter;
+    return matchesQuery && matchesRisk;
+  });
+
+  const assessedCount = children.filter((child) => child.nutritionStatus).length;
+  const followUpCount = children.filter((child) => child.riskLevel === 'Medium' || child.riskLevel === 'High').length;
+  const pendingCount = children.length - assessedCount;
+  const summaryCards = [
+    { label: isProfessional ? 'Children' : 'My children', value: children.length },
+    { label: 'Assessments', value: assessedCount },
+    { label: 'Follow-up', value: followUpCount },
+    { label: 'Pending review', value: pendingCount },
+  ];
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
+      <Header currentPage="dashboard" />
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-8 md:px-10">
         <header className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -177,6 +185,13 @@ export default function DashboardPage() {
           ))}
         </section>
 
+        {error && (
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800" role="alert">
+            <span>{error}</span>
+            <button type="button" onClick={() => window.location.reload()} className="font-semibold underline underline-offset-4">Try again</button>
+          </div>
+        )}
+
         <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between gap-4">
@@ -189,6 +204,15 @@ export default function DashboardPage() {
               </Link>
             </div>
 
+            <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_180px]">
+              <label className="sr-only" htmlFor="child-search">Search child records</label>
+              <input id="child-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by child name or ID" className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100" />
+              <label className="sr-only" htmlFor="risk-filter">Filter by risk</label>
+              <select id="risk-filter" value={riskFilter} onChange={(event) => setRiskFilter(event.target.value)} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100">
+                <option>All</option><option>Low</option><option>Medium</option><option>High</option>
+              </select>
+            </div>
+
             {children.length === 0 ? (
               <div className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
                 <p className="text-lg font-medium text-slate-700">No children registered yet.</p>
@@ -197,9 +221,11 @@ export default function DashboardPage() {
                   Register Child
                 </Link>
               </div>
+            ) : filteredChildren.length === 0 ? (
+              <div className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500">No children match the current search or risk filter.</div>
             ) : (
               <div className="mt-6 space-y-3">
-                {children.map((child) => (
+                {filteredChildren.map((child) => (
                   <div key={child.id} className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:flex-row md:items-center md:justify-between">
                     <div>
                       <p className="text-lg font-semibold text-slate-900">{child.name}</p>

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface HeaderProps {
   currentPage?: string;
@@ -11,6 +11,15 @@ interface HeaderProps {
 export default function Header({ currentPage = 'home' }: HeaderProps) {
   const [language, setLanguage] = useState<'en' | 'am'>('en');
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, []);
 
   const navLinks = [
     { href: '/', label: language === 'en' ? 'Home' : 'መነሻ' },
@@ -73,13 +82,15 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
           onClick={() => setIsOpen((value) => !value)}
           className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-lg text-slate-700 md:hidden"
           aria-label="Toggle navigation"
+          aria-expanded={isOpen}
+          aria-controls="mobile-navigation"
         >
-          ☰
+          {isOpen ? '×' : '☰'}
         </button>
       </div>
 
       {isOpen && (
-        <div className="border-t border-slate-200 bg-white px-4 py-4 md:hidden">
+        <div id="mobile-navigation" className="border-t border-slate-200 bg-white px-4 py-4 md:hidden">
           <div className="flex flex-col gap-3">
             {navLinks.map((item) => (
               <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className="text-sm font-medium text-slate-700">
