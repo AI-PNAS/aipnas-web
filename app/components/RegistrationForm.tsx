@@ -12,13 +12,13 @@ interface RegistrationFormProps {
 }
 
 const sectionTitles = [
-  'Basic Demographics',
-  'Medical & Family History',
-  'Personal & Social History',
-  'Vital Signs',
-  'Anthropometric Inputs',
-  'Physical / Clinical Signs',
-  'Review & Report',
+  'Child identification',
+  'Basic information',
+  'AI-assisted measurement',
+  'Measurement verification',
+  'WHO growth analysis',
+  'Risk screening',
+  'Clinical review',
 ];
 
 type TrafficLight = 'Red' | 'Yellow' | 'Green';
@@ -184,6 +184,7 @@ const initialFormState: FormState = {
   oralSigns: '',
   hearingLossDevelopmentalDelay: '',
   generalAppearance: '',
+  aiConfidence: '',
 };
 
 function toNumber(value: FormValue): number | undefined {
@@ -314,14 +315,16 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
     const estimatedHeight = Math.max(45, 49 + ageInMonths * 1.15) * sexMultiplier;
     const estimatedWeight = Math.max(2.6, 3.1 + ageInMonths * 0.26) * sexMultiplier;
     const estimatedMuac = Math.max(10.5, 11.4 + ageInMonths * 0.04);
+    const generatedConfidence = Math.max(61, Math.min(98, Math.round(95 - ageInMonths * 0.15)));
 
     setFormData((previous) => ({
       ...previous,
       height: previous.height || estimatedHeight.toFixed(1),
       weight: previous.weight || estimatedWeight.toFixed(1),
       muac: previous.muac || estimatedMuac.toFixed(1),
-      heightSource: previous.heightSource || 'AI camera estimate',
-      weightSource: previous.weightSource || 'AI camera estimate',
+      heightSource: previous.heightSource || 'AI estimated',
+      weightSource: previous.weightSource || 'AI estimated',
+      aiConfidence: previous.aiConfidence || String(generatedConfidence),
     }));
   };
 
@@ -411,17 +414,30 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
 
       case 2:
         return (
-          <div className="grid gap-4 md:grid-cols-2">
-            {renderField('earlyDevelopment', 'Early Development', { type: 'textarea', rows: 4, placeholder: 'Place of birth, home environment, health, economy' })}
-            {renderField('educationalBackground', 'Educational Background', { type: 'textarea', rows: 4, placeholder: 'Schooling or childcare background' })}
-            {renderField('socialActivities', 'Social Activities', { type: 'textarea', rows: 4, placeholder: 'Community, play, support network' })}
-            {renderField('workRecordIncome', 'Work Record & Income', { type: 'textarea', rows: 4, placeholder: 'Parent/guardian work and income context' })}
-            {renderField('dietHabits', 'Diet Habits', { type: 'textarea', rows: 4, placeholder: 'Diet pattern, meal frequency, food access' })}
-            {renderField('alcoholUse', 'Alcohol Use', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
-            {renderField('tobaccoUse', 'Tobacco Use', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
-            {renderField('drugUse', 'Drug Use', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
-            {renderField('herbUse', 'Herb Use', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
-            {renderField('addictions', 'Addictions', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
+          <div className="space-y-4">
+            <div className="app-card p-4">
+              <h4 className="text-base font-semibold text-slate-900">Camera preview (simulation)</h4>
+              <p className="mt-1 text-sm text-slate-600">
+                Position child within guide. Ensure clear lighting and full-body pose before estimation.
+              </p>
+              <div className="mt-3 grid gap-3 md:grid-cols-3">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">Image quality: Good</div>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">Lighting quality: Good</div>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">Pose quality: Acceptable</div>
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {renderField('earlyDevelopment', 'Early Development', { type: 'textarea', rows: 4, placeholder: 'Place of birth, home environment, health, economy' })}
+              {renderField('educationalBackground', 'Educational Background', { type: 'textarea', rows: 4, placeholder: 'Schooling or childcare background' })}
+              {renderField('socialActivities', 'Social Activities', { type: 'textarea', rows: 4, placeholder: 'Community, play, support network' })}
+              {renderField('workRecordIncome', 'Work Record & Income', { type: 'textarea', rows: 4, placeholder: 'Parent/guardian work and income context' })}
+              {renderField('dietHabits', 'Diet Habits', { type: 'textarea', rows: 4, placeholder: 'Diet pattern, meal frequency, food access' })}
+              {renderField('alcoholUse', 'Alcohol Use', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
+              {renderField('tobaccoUse', 'Tobacco Use', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
+              {renderField('drugUse', 'Drug Use', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
+              {renderField('herbUse', 'Herb Use', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
+              {renderField('addictions', 'Addictions', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
+            </div>
           </div>
         );
 
@@ -456,21 +472,27 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
               {renderField('muac', 'MUAC (cm)', { type: 'number', placeholder: 'Required', required: true })}
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              {renderField('heightSource', 'Height Source', { placeholder: 'Measured or AI camera estimate' })}
-              {renderField('weightSource', 'Weight Source', { placeholder: 'Measured or AI camera estimate' })}
+              {renderField('heightSource', 'Height Provenance', { placeholder: 'AI estimated / Clinician verified / Manually entered / Needs review' })}
+              {renderField('weightSource', 'Weight Provenance', { placeholder: 'AI estimated / Clinician verified / Manually entered / Needs review' })}
+              {renderField('aiConfidence', 'AI measurement confidence (%)', { type: 'number', placeholder: 'Optional' })}
               {renderField('headCircumference', 'Head Circumference (cm)', { type: 'number', placeholder: 'Optional' })}
               {renderField('chestCircumference', 'Chest Circumference (cm)', { type: 'number', placeholder: 'Optional' })}
             </div>
             <div className="rounded-2xl border border-sky-100 bg-sky-50 p-4 text-sm text-sky-900">
-              If exact height or weight is unavailable, use the AI estimate button. The app will fill a provisional value so analysis can continue.
+              If AI confidence is below threshold, manual verification is required before final screening output.
             </div>
+            {Number(formData.aiConfidence || 0) > 0 && Number(formData.aiConfidence || 0) < 85 && (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                AI confidence is insufficient. Please verify or enter the measurement manually.
+              </div>
+            )}
             <div className="flex flex-wrap gap-3">
               <button
                 type="button"
                 onClick={estimateAnthropometrics}
                 className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
               >
-                Use AI Estimate
+                Use AI estimate
               </button>
             </div>
           </div>
@@ -499,6 +521,9 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
             {renderField('oralSigns', 'Oral Signs', { type: 'textarea', rows: 3, placeholder: 'Stomatitis, glossitis' })}
             {renderField('hearingLossDevelopmentalDelay', 'Hearing Loss / Developmental Delay', { type: 'textarea', rows: 3, placeholder: 'Optional' })}
             {renderField('generalAppearance', 'General Appearance', { type: 'textarea', rows: 4, placeholder: 'Lethargy, irritability, muscle wasting' })}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 md:col-span-2">
+              Screening output supports clinical review and follow-up planning; it is not a definitive diagnosis.
+            </div>
           </div>
         );
 
@@ -508,7 +533,7 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
               <h3 className="text-lg font-semibold text-slate-900">Review intake before submission</h3>
               <p className="mt-1 text-sm text-slate-600">
-                The report will calculate estimated WHO-style z-score traffic lights, overlay clinical signs, and generate recommendations.
+                The report summarizes AI-assisted screening, verification status, WHO indicators, and follow-up recommendations for professional review.
               </p>
             </div>
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

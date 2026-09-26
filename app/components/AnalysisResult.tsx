@@ -47,6 +47,12 @@ function getTrafficColor(label: string): string {
 
 export default function AnalysisResult({ result }: AnalysisResultProps) {
   const alertCount = result.physicalSignAlerts.length + result.vitalSignAlerts.length;
+  const screeningLabel =
+    result.riskLevel === 'High'
+      ? 'Needs clinical review'
+      : result.riskLevel === 'Medium'
+        ? 'Needs follow-up'
+        : 'Routine monitoring';
   const scoreCards: Array<{ label: string; score: { value: number; label: string; interpretation: string } }> = [
     { label: 'Weight-for-Age', score: result.zScores.weightForAge },
     { label: 'Height-for-Age', score: result.zScores.heightForAge },
@@ -60,9 +66,9 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
       <div className="bg-gradient-to-r from-slate-950 via-sky-950 to-cyan-900 p-6 text-white md:p-8">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.35em] text-cyan-200">Integrated AI Classification</p>
+            <p className="text-sm uppercase tracking-[0.35em] text-cyan-200">AI-assisted screening result</p>
             <h2 className="mt-2 text-3xl font-semibold">{result.name}</h2>
-            <p className="mt-1 text-slate-200">Nutrition report generated at {new Date(result.timestamp).toLocaleString()}</p>
+            <p className="mt-1 text-slate-200">Screening summary generated at {new Date(result.timestamp).toLocaleString()}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur">
             <p className="text-xs uppercase tracking-[0.3em] text-cyan-200">Risk Level</p>
@@ -97,7 +103,7 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
 
         <div className="grid gap-6 xl:grid-cols-2">
           <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">Assessment Status</h3>
+            <h3 className="text-lg font-semibold text-slate-900">Assessment status</h3>
             <div className="mt-4 space-y-3 text-sm text-slate-700">
               <div className="flex items-center justify-between gap-3">
                 <span>Nutrition Status</span>
@@ -110,6 +116,10 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
                 <span className="font-semibold">{result.riskLevel}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
+                <span>Clinical attention</span>
+                <span className="font-semibold">{screeningLabel}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
                 <span>Alerts</span>
                 <span className="font-semibold">{alertCount} findings</span>
               </div>
@@ -117,9 +127,12 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
           </div>
 
           <div className={`rounded-3xl border-2 p-5 ${getRiskColor(result.riskLevel)}`}>
-            <h3 className="text-lg font-semibold">Clinical Interpretation</h3>
+            <h3 className="text-lg font-semibold">Clinical interpretation</h3>
             <p className="mt-3 text-sm leading-6">{result.classification}</p>
             <p className="mt-3 text-sm leading-6">{result.reportSummary}</p>
+            <p className="mt-3 text-xs leading-5">
+              This screening output supports professional review and does not replace diagnosis or clinical judgment.
+            </p>
           </div>
         </div>
 

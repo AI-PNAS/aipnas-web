@@ -3,22 +3,29 @@
 import en from '@/public/locales/en/common.json';
 import am from '@/public/locales/am/common.json';
 
-type Language = 'en' | 'am';
+export type Language = 'en' | 'am';
 
-const translations = {
+type TranslationTree = {
+  [key: string]: string | TranslationTree;
+};
+
+const translations: Record<Language, TranslationTree> = {
   en,
   am,
 };
 
 export function getTranslation(key: string, lang: Language = 'en'): string {
   const keys = key.split('.');
-  let value: any = translations[lang] || translations.en;
+  let value: string | TranslationTree | undefined = translations[lang] ?? translations.en;
 
   for (const k of keys) {
-    value = value?.[k];
+    if (typeof value !== 'object' || value === null) {
+      return key;
+    }
+    value = value[k];
   }
 
-  return value || key;
+  return typeof value === 'string' ? value : key;
 }
 
 export const SUPPORTED_LANGUAGES: { code: Language; label: string }[] = [
@@ -26,4 +33,6 @@ export const SUPPORTED_LANGUAGES: { code: Language; label: string }[] = [
   { code: 'am', label: 'አማርኛ' },
 ];
 
-export default { getTranslation, SUPPORTED_LANGUAGES };
+const i18nConfig = { getTranslation, SUPPORTED_LANGUAGES };
+
+export default i18nConfig;
