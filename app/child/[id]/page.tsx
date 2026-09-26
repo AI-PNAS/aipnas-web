@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import Header from '@/app/components/Header';
-import AnalysisResult from '@/app/components/AnalysisResult';
-import { NutritionAnalysisResult } from '@/lib/types';
+import AppShell from '@/app/components/layout/AppShell';
+import StatePanel from '@/app/components/ui/StatePanel';
+import StatusBadge from '@/app/components/ui/StatusBadge';
 
 interface AnalysisLog {
   id: string;
@@ -22,15 +22,10 @@ interface ChildData {
   muac: number;
   headCircumference: number | null;
   chestCircumference: number | null;
-  bmi: number | null;
   nutritionStatus: string | null;
   riskLevel: string | null;
-  classification: string | null;
   recommendation: string | null;
   referralSuggestion: string | null;
-  reportSummary: string | null;
-  physicalSignAlerts: string | null;
-  vitalSignAlerts: string | null;
   weightForAgeZ: number | null;
   heightForAgeZ: number | null;
   weightForHeightZ: number | null;
@@ -39,25 +34,30 @@ interface ChildData {
 }
 
 interface ChildDetailsPageProps {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 }
 
-function getTrafficLabel(value: number | null): 'Red' | 'Yellow' | 'Green' {
-  if (value === null) {
-    return 'Green';
+function MiniLineChart({ values }: { values: number[] }) {
+  if (values.length < 2) {
+    return <p className="text-sm text-slate-500">No longitudinal data available yet.</p>;
   }
 
-  if (value <= -3 || value >= 3) {
-    return 'Red';
-  }
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const safeRange = max - min || 1;
+  const points = values
+    .map((value, index) => {
+      const x = (index / (values.length - 1)) * 100;
+      const y = 100 - ((value - min) / safeRange) * 100;
+      return `${x},${y}`;
+    })
+    .join(' ');
 
-  if (value <= -2 || value >= 2) {
-    return 'Yellow';
-  }
-
-  return 'Green';
+  return (
+    <svg viewBox="0 0 100 100" className="h-24 w-full" aria-label="Growth trend chart">
+      <polyline fill="none" stroke="#0f5f78" strokeWidth="3" points={points} />
+    </svg>
+  );
 }
 
 export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
@@ -68,156 +68,129 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
   const [childId, setChildId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Resolve the async params
-    params.then((resolvedParams) => {
-      setChildId(resolvedParams.id);
-    });
+    params.then((resolvedParams) => setChildId(resolvedParams.id));
   }, [params]);
 
   useEffect(() => {
     if (!childId) return;
-
-    const fetchChildDetails = async () => {
+    const run = async () => {
       try {
         const response = await fetch(`/api/child/${childId}`);
         const data = await response.json();
-
-        if (!data.success) {
-          throw new Error(data.message || 'Failed to fetch child details');
-        }
-
+        if (!response.ok || !data.success) throw new Error(data.message || 'Failed to fetch child');
         setChild(data.child);
         setHistory(data.history || []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : 'Unable to load child information');
       } finally {
         setLoading(false);
       }
     };
-
-    fetchChildDetails();
+    run();
   }, [childId]);
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-gray-50">
-        <Header currentPage="dashboard" />
-        <div className="max-w-7xl mx-auto px-4 py-12 text-center">
-          <p className="text-gray-600">Loading child details...</p>
-        </div>
-      </main>
-    );
-  }
-
-  if (error || !child) {
-    return (
-      <main className="min-h-screen bg-gray-50">
-        <Header currentPage="dashboard" />
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="text-center">
-            <p className="text-red-600 font-semibold">{error || 'Child not found'}</p>
-            <Link href="/" className="text-blue-600 hover:underline mt-4 inline-block">
-              Back to Dashboard
-            </Link>
-          </div>
-        </div>
-      </main>
-    );
-  }
-
-  // Construct current analysis result
-  const currentAnalysis: NutritionAnalysisResult = {
-    childId: child.id,
-    name: child.name,
-    age: child.age,
-    sex: child.sex as 'M' | 'F',
-    weight: child.weight,
-    height: child.height,
-    muac: child.muac,
-    bmi: child.bmi || 0,
-    nutritionStatus: (child.nutritionStatus || 'Normal') as NutritionAnalysisResult['nutritionStatus'],
-    riskLevel: (child.riskLevel || 'Low') as NutritionAnalysisResult['riskLevel'],
-    classification: child.classification || '',
-    recommendation: child.recommendation || '',
-    referralSuggestion: child.referralSuggestion || '',
-    reportSummary: child.reportSummary || '',
-    physicalSignAlerts: child.physicalSignAlerts ? child.physicalSignAlerts.split(' | ') : [],
-    vitalSignAlerts: child.vitalSignAlerts ? child.vitalSignAlerts.split(' | ') : [],
-    zScores: {
-      weightForAge: {
-        value: child.weightForAgeZ || 0,
-        label: getTrafficLabel(child.weightForAgeZ),
-        interpretation: 'Persisted from the latest analysis',
-      },
-      heightForAge: {
-        value: child.heightForAgeZ || 0,
-        label: getTrafficLabel(child.heightForAgeZ),
-        interpretation: 'Persisted from the latest analysis',
-      },
-      weightForHeight: {
-        value: child.weightForHeightZ || 0,
-        label: getTrafficLabel(child.weightForHeightZ),
-        interpretation: 'Persisted from the latest analysis',
-      },
-      bmiForAge: {
-        value: child.bmiForAgeZ || 0,
-        label: getTrafficLabel(child.bmiForAgeZ),
-        interpretation: 'Persisted from the latest analysis',
-      },
-      muac: {
-        value: child.muacZ || 0,
-        label: getTrafficLabel(child.muacZ !== null ? -child.muacZ : null),
-        interpretation: 'Persisted from the latest analysis',
-      },
-    },
-    timestamp: new Date(),
-  };
+  const trendValues = useMemo(() => {
+    return history
+      .map((item) => {
+        try {
+          const parsed = JSON.parse(item.analysis) as { weight?: number };
+          return parsed.weight;
+        } catch {
+          return undefined;
+        }
+      })
+      .filter((value): value is number => typeof value === 'number');
+  }, [history]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <Header currentPage="dashboard" />
+    <AppShell
+      title={child ? child.name : 'Child profile'}
+      subtitle={child ? `${child.age} months • ${child.sex === 'M' ? 'Male' : 'Female'}` : 'Loading child profile'}
+      navItems={[
+        { href: '/clinical', label: 'Dashboard' },
+        { href: '/register', label: 'Assessments' },
+      ]}
+      actions={<Link href="/clinical" className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium">Back</Link>}
+    >
+      {loading && <StatePanel title="Loading child information..." description="Please wait while profile and assessment history are loaded." />}
+      {error && <StatePanel title="Unable to load this child's information" description={`${error}. Please try again.`} tone="error" />}
+      {!loading && !error && !child && <StatePanel title="Child not found" description="The requested profile is not available." tone="empty" />}
+      {!loading && !error && child && (
+        <div className="space-y-6">
+          <section className="grid gap-4 md:grid-cols-4">
+            <article className="app-card p-4">
+              <p className="text-sm text-slate-500">Weight</p>
+              <p className="mt-1 text-xl font-semibold">{child.weight} kg</p>
+            </article>
+            <article className="app-card p-4">
+              <p className="text-sm text-slate-500">Height / Length</p>
+              <p className="mt-1 text-xl font-semibold">{child.height} cm</p>
+            </article>
+            <article className="app-card p-4">
+              <p className="text-sm text-slate-500">MUAC</p>
+              <p className="mt-1 text-xl font-semibold">{child.muac} cm</p>
+            </article>
+            <article className="app-card p-4">
+              <p className="text-sm text-slate-500">Risk</p>
+              <div className="mt-1">
+                <StatusBadge tone={child.riskLevel === 'High' ? 'danger' : child.riskLevel === 'Medium' ? 'warning' : 'success'}>
+                  {child.riskLevel ?? 'Pending'}
+                </StatusBadge>
+              </div>
+            </article>
+          </section>
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <Link href="/" className="text-blue-600 hover:text-blue-800 font-semibold mb-6 inline-block">
-          ← Back to Dashboard
-        </Link>
+          <section className="grid gap-4 lg:grid-cols-2">
+            <article className="app-card p-5">
+              <h2 className="text-lg font-semibold">Growth overview</h2>
+              <p className="mt-2 text-sm text-slate-600">Nutrition screening status: {child.nutritionStatus ?? 'Not available yet'}</p>
+              <p className="mt-2 text-sm text-slate-600">Head circumference: {child.headCircumference ?? 'Not recorded'} cm</p>
+              <p className="mt-2 text-sm text-slate-600">Chest circumference: {child.chestCircumference ?? 'Not recorded'} cm</p>
+            </article>
+            <article className="app-card p-5">
+              <h2 className="text-lg font-semibold">Growth trend</h2>
+              <MiniLineChart values={trendValues} />
+              <p className="mt-2 text-xs text-slate-500">Reference curve overlay: pending backend integration.</p>
+            </article>
+          </section>
 
-        <AnalysisResult result={currentAnalysis} />
+          <section className="grid gap-4 lg:grid-cols-2">
+            <article className="app-card p-5">
+              <h2 className="text-lg font-semibold">WHO growth indicators</h2>
+              <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                <li>Weight-for-age: {child.weightForAgeZ ?? 'N/A'} Z</li>
+                <li>Height-for-age: {child.heightForAgeZ ?? 'N/A'} Z</li>
+                <li>Weight-for-height: {child.weightForHeightZ ?? 'N/A'} Z</li>
+                <li>BMI-for-age: {child.bmiForAgeZ ?? 'N/A'} Z</li>
+                <li>MUAC: {child.muacZ ?? 'N/A'} Z</li>
+              </ul>
+            </article>
+            <article className="app-card p-5">
+              <h2 className="text-lg font-semibold">Risk and follow-up</h2>
+              <p className="mt-2 text-sm text-slate-600">{child.recommendation ?? 'No recommendation available yet.'}</p>
+              <p className="mt-2 text-sm text-slate-600">{child.referralSuggestion ?? 'No referral note available yet.'}</p>
+              <p className="mt-3 text-xs text-slate-500">
+                Screening outputs are decision-support information and require professional clinical review.
+              </p>
+            </article>
+          </section>
 
-        {/* Assessment History */}
-        {history.length > 0 && (
-          <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Assessment History</h3>
-            <div className="space-y-4">
-              {history.map((log) => {
-                try {
-                  const analysis = JSON.parse(log.analysis);
-                  return (
-                    <div
-                      key={log.id}
-                      className="border border-gray-300 rounded-lg p-4 hover:bg-gray-50"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="font-semibold text-gray-900">
-                            {new Date(log.createdAt).toLocaleDateString()} at{' '}
-                            {new Date(log.createdAt).toLocaleTimeString()}
-                          </p>
-                          <p className="text-gray-600">Status: {analysis.nutritionStatus}</p>
-                          <p className="text-gray-600">Risk Level: {analysis.riskLevel}</p>
-                          <p className="text-gray-600">BMI: {analysis.bmi}</p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                } catch {
-                  return null;
-                }
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    </main>
+          <section className="app-card p-5">
+            <h2 className="text-lg font-semibold">Assessment history</h2>
+            {history.length === 0 ? (
+              <p className="mt-2 text-sm text-slate-600">No assessments have been recorded yet.</p>
+            ) : (
+              <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                {history.map((log) => (
+                  <li key={log.id} className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                    {new Date(log.createdAt).toLocaleString()}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      )}
+    </AppShell>
   );
 }

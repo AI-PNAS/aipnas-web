@@ -1,68 +1,37 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 
 interface HeaderProps {
-  currentPage: string;
+  currentPage: 'dashboard' | 'register';
 }
 
 export default function Header({ currentPage }: HeaderProps) {
-  const [language, setLanguage] = useState('en');
-
   return (
-    <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">AI-PNAS</h1>
-            <p className="text-blue-100 text-sm">
-              AI Powered Pediatric Nutritional Assessment System
-            </p>
-          </div>
-
-          <div className="flex gap-4 items-center">
-            <div className="flex gap-2 bg-blue-700 rounded-lg p-1">
-              <button
-                onClick={() => setLanguage('en')}
-                className={`px-4 py-2 rounded ${
-                  language === 'en' ? 'bg-white text-blue-600' : 'text-white'
-                }`}
-              >
-                EN
-              </button>
-              <button
-                onClick={() => setLanguage('am')}
-                className={`px-4 py-2 rounded ${
-                  language === 'am' ? 'bg-white text-blue-600' : 'text-white'
-                }`}
-              >
-                አ
-              </button>
-            </div>
-          </div>
+    <header className="border-b border-slate-200 bg-white">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-teal-700">AI PNAS</p>
+          <p className="text-sm text-slate-600">AI-assisted pediatric nutritional screening</p>
         </div>
-
-        <nav className="mt-4 flex gap-6 border-t border-blue-500 pt-4">
+        <nav className="flex flex-wrap gap-2 text-sm">
+          <Link href="/clinical" className="rounded-lg bg-slate-100 px-3 py-2 font-medium text-slate-700">
+            Clinical dashboard
+          </Link>
+          <Link href="/family" className="rounded-lg bg-slate-100 px-3 py-2 font-medium text-slate-700">
+            Family dashboard
+          </Link>
           <Link
             href="/"
-            className={`pb-2 border-b-2 ${
-              currentPage === 'dashboard'
-                ? 'border-white font-semibold'
-                : 'border-transparent hover:border-blue-300'
-            }`}
+            className={`rounded-lg px-3 py-2 font-medium ${currentPage === 'dashboard' ? 'bg-teal-700 text-white' : 'bg-slate-100 text-slate-700'}`}
           >
-            Dashboard
+            Home
           </Link>
           <Link
             href="/register"
-            className={`pb-2 border-b-2 ${
-              currentPage === 'register'
-                ? 'border-white font-semibold'
-                : 'border-transparent hover:border-blue-300'
-            }`}
+            className={`rounded-lg px-3 py-2 font-medium ${currentPage === 'register' ? 'bg-teal-700 text-white' : 'bg-slate-100 text-slate-700'}`}
           >
-            Register Child
+            Assessment
           </Link>
         </nav>
       </div>

@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f8fc;
+  --surface: #ffffff;
+  --foreground: #0f2743;
+  --muted-foreground: #4a647e;
+  --border: #d4e2ee;
+  --primary: #0f5f78;
+  --primary-foreground: #f8fcff;
+  --secondary: #0ea5b9;
+  --success: #1f8a57;
+  --warning: #b56a00;
+  --danger: #c7352d;
+  --radius: 0.875rem;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: "Inter", "Segoe UI", "Noto Sans Ethiopic", Arial, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+.app-card {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(14, 39, 67, 0.06);
+}
+
+.status-note {
+  border-left: 4px solid var(--primary);
+  background: #e8f5f9;
+  color: #0b4258;
 }

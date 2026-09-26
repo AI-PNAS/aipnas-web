@@ -145,21 +145,21 @@ export function calculateBMI(weight: number, heightCm: number): number {
 }
 
 /**
- * BMI Classification
- * WHO standards for children adapted from adult categories
+ * BMI-for-age classification
+ * Uses simplified pediatric z-score boundaries for screening support.
  */
-export function classifyBMI(bmi: number): { status: string; severity: RiskLevel } {
-  if (bmi < 18.5) {
+export function classifyBMIForAgeZ(bmiForAgeZ: number): { status: string; severity: RiskLevel } {
+  if (bmiForAgeZ <= -3) {
     return {
       status: 'Underweight',
       severity: 'High',
     };
-  } else if (bmi >= 18.5 && bmi < 25) {
+  } else if (bmiForAgeZ > -3 && bmiForAgeZ < 2) {
     return {
       status: 'Normal',
       severity: 'Low',
     };
-  } else if (bmi >= 25 && bmi < 30) {
+  } else if (bmiForAgeZ >= 2 && bmiForAgeZ < 3) {
     return {
       status: 'Overweight',
       severity: 'Medium',
@@ -174,17 +174,17 @@ export function classifyBMI(bmi: number): { status: string; severity: RiskLevel 
 
 /**
  * Determine Overall Nutrition Status
- * Priority: MUAC classification takes precedence
+ * Priority: MUAC classification takes precedence for acute malnutrition.
  */
-export function determineNutritionStatus(muac: number, bmi: number): NutritionStatus {
+export function determineNutritionStatus(muac: number, bmiForAgeZ: number): NutritionStatus {
   // MUAC takes priority for acute malnutrition detection
   if (muac < 11.5) return 'SAM';
   if (muac >= 11.5 && muac < 12.5) return 'MAM';
 
-  // BMI-based classification for other statuses
-  if (bmi < 18.5) return 'Underweight';
-  if (bmi >= 25 && bmi < 30) return 'Overweight';
-  if (bmi >= 30) return 'Obesity';
+  // Pediatric BMI-for-age screening boundaries
+  if (bmiForAgeZ <= -3) return 'Underweight';
+  if (bmiForAgeZ >= 2 && bmiForAgeZ < 3) return 'Overweight';
+  if (bmiForAgeZ >= 3) return 'Obesity';
 
   return 'Normal';
 }
@@ -215,7 +215,6 @@ export function generateClassificationDetails(
   bmi: number
 ): ClassificationDetails {
   const muacStatus = classifyMUAC(child.muac).status;
-  const bmiStatus = classifyBMI(bmi).status;
 
   const ageMonths = child.age;
   const weightForAge = buildZScore(child.weight, expectedWeight(ageMonths, child.sex), 'Weight-for-age');
@@ -223,6 +222,7 @@ export function generateClassificationDetails(
   const expectedWeightForHeight = expectedBmi(ageMonths, child.sex) * Math.pow(child.height / 100, 2);
   const weightForHeight = buildZScore(child.weight, expectedWeightForHeight, 'Weight-for-height');
   const bmiForAge = buildZScore(bmi, expectedBmi(ageMonths, child.sex), 'BMI-for-age');
+  const bmiStatus = classifyBMIForAgeZ(bmiForAge.value).status;
   const muacScore = buildZScore(child.muac, 12.5, 'MUAC');
 
   const stunting = heightForAge.value <= -2;
@@ -378,10 +378,9 @@ export function generateMedicalRecommendation(
  */
 export function analyzeChildNutrition(child: ChildData): NutritionAnalysisResult {
   const bmi = calculateBMI(child.weight, child.height);
-  const nutritionStatus = determineNutritionStatus(child.muac, bmi);
-  const riskLevel = determineRiskLevel(nutritionStatus);
-
   const classificationDetails = generateClassificationDetails(child, bmi);
+  const nutritionStatus = determineNutritionStatus(child.muac, classificationDetails.zScores.bmiForAge.value);
+  const riskLevel = determineRiskLevel(nutritionStatus);
 
   const medicalRec = generateMedicalRecommendation(
     nutritionStatus,

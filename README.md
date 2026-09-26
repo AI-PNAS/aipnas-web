@@ -51,7 +51,7 @@ The system serves:
 
 ```bash
 # Navigate to project
-cd /workspaces/aipnas-web
+cd aipnas-web
 
 # Install dependencies
 npm install
@@ -129,6 +129,7 @@ npm run dev       # Development server
 npm run build     # Production build
 npm start        # Start production
 npm run lint     # Run linter
+npx tsc --noEmit # Type-check
 ```
 
 ## 🌐 API Examples

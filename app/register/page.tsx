@@ -48,21 +48,21 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <main className="min-h-screen bg-slate-50">
       <Header currentPage="register" />
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {!result ? (
           <>
-            <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Register Child</h1>
-              <p className="text-gray-600">
-                Enter child anthropometric measurements for AI-powered nutritional assessment
+            <div className="mb-6">
+              <h1 className="text-3xl font-semibold text-slate-900 mb-2">AI-assisted assessment workflow</h1>
+              <p className="text-slate-600">
+                Use the structured workflow for child identification, measurements, AI-assisted estimation, verification, WHO growth analysis, and clinical review.
               </p>
             </div>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
                 <p className="font-semibold">Error</p>
                 <p>{error}</p>
               </div>
@@ -70,17 +70,15 @@ export default function RegisterPage() {
 
             <RegistrationForm onSubmit={handleSubmit} isLoading={isLoading} />
 
-            <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="font-bold text-blue-900 mb-2">About the Assessment</h3>
-              <ul className="text-blue-800 text-sm space-y-1">
+            <div className="mt-8 p-4 bg-cyan-50 border border-cyan-200 rounded-lg">
+              <h3 className="font-bold text-cyan-900 mb-2">Safety note</h3>
+              <ul className="text-cyan-900 text-sm space-y-1">
+                <li>• AI PNAS provides screening support and does not replace professional clinical assessment.</li>
+                <li>• AI confidence and measurement provenance are shown to support review decisions.</li>
                 <li>
-                  • <strong>MUAC Classification:</strong> MUAC &lt; 11.5cm = SAM, 11.5-12.5cm = MAM
+                  • <strong>Manual verification is required</strong> when confidence is below threshold.
                 </li>
-                <li>
-                  • <strong>BMI Classification:</strong> Based on weight and height measurements
-                </li>
-                <li>• All assessments follow WHO anthropometric standards</li>
-                <li>• Results are saved for future reference and tracking</li>
+                <li>• Results are persisted for longitudinal follow-up and report generation.</li>
               </ul>
             </div>
           </>
