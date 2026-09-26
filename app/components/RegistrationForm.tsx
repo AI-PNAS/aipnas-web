@@ -320,8 +320,8 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
       height: previous.height || estimatedHeight.toFixed(1),
       weight: previous.weight || estimatedWeight.toFixed(1),
       muac: previous.muac || estimatedMuac.toFixed(1),
-      heightSource: previous.heightSource || 'AI camera estimate',
-      weightSource: previous.weightSource || 'AI camera estimate',
+      heightSource: previous.heightSource || 'Provisional estimate - verify manually',
+      weightSource: previous.weightSource || 'Provisional estimate - verify manually',
     }));
   };
 
@@ -462,7 +462,7 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
               {renderField('chestCircumference', 'Chest Circumference (cm)', { type: 'number', placeholder: 'Optional' })}
             </div>
             <div className="rounded-2xl border border-sky-100 bg-sky-50 p-4 text-sm text-sky-900">
-              If exact height or weight is unavailable, use the AI estimate button. The app will fill a provisional value so analysis can continue.
+              If exact height or weight is unavailable, use the provisional estimate. Verify these values manually before relying on the report.
             </div>
             <div className="flex flex-wrap gap-3">
               <button
@@ -470,7 +470,7 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
                 onClick={estimateAnthropometrics}
                 className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
               >
-                Use AI Estimate
+                Use provisional estimate
               </button>
             </div>
           </div>
@@ -553,8 +553,8 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
           <div>
             <p className="text-sm uppercase tracking-[0.35em] text-cyan-200">Child Intake Workflow</p>
             <h2 className="mt-2 text-3xl font-semibold md:text-4xl">Register New Child</h2>
-            <p className="mt-2 max-w-2xl text-sm text-slate-200">
-              Capture the full clinical intake in seven steps. The last step generates the integrated nutrition report.
+              <p className="mt-2 max-w-2xl text-sm text-slate-200">
+              Capture the clinical intake in seven steps. The last step sends the measurements to the nutrition analysis service.
             </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur">

@@ -66,6 +66,8 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [childId, setChildId] = useState<string | null>(null);
+  const [historyQuery, setHistoryQuery] = useState('');
+  const [historyRisk, setHistoryRisk] = useState('All');
 
   useEffect(() => {
     // Resolve the async params
@@ -116,7 +118,7 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="text-center">
             <p className="text-red-600 font-semibold">{error || 'Child not found'}</p>
-            <Link href="/" className="text-blue-600 hover:underline mt-4 inline-block">
+            <Link href="/dashboard" className="text-blue-600 hover:underline mt-4 inline-block">
               Back to Dashboard
             </Link>
           </div>
@@ -178,7 +180,7 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
       <Header currentPage="dashboard" />
 
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <Link href="/" className="text-blue-600 hover:text-blue-800 font-semibold mb-6 inline-block">
+        <Link href="/dashboard" className="text-blue-600 hover:text-blue-800 font-semibold mb-6 inline-block">
           ← Back to Dashboard
         </Link>
 
@@ -187,9 +189,30 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
         {/* Assessment History */}
         {history.length > 0 && (
           <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Assessment History</h3>
-            <div className="space-y-4">
-              {history.map((log) => {
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800">Assessment History</h3>
+                <p className="mt-1 text-sm text-gray-500">Review saved nutrition assessments for this child.</p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <label className="sr-only" htmlFor="history-search">Search assessment history</label>
+                <input id="history-search" value={historyQuery} onChange={(event) => setHistoryQuery(event.target.value)} placeholder="Search status or date" className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-teal-500" />
+                <label className="sr-only" htmlFor="history-risk">Filter assessment risk</label>
+                <select id="history-risk" value={historyRisk} onChange={(event) => setHistoryRisk(event.target.value)} className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-teal-500">
+                  <option>All</option><option>Low</option><option>Medium</option><option>High</option>
+                </select>
+              </div>
+            </div>
+            <div className="mt-5 space-y-4">
+              {history.filter((log) => {
+                try {
+                  const analysis = JSON.parse(log.analysis) as { nutritionStatus?: string; riskLevel?: string };
+                  const searchable = `${new Date(log.createdAt).toLocaleDateString()} ${analysis.nutritionStatus || ''} ${analysis.riskLevel || ''}`.toLowerCase();
+                  return searchable.includes(historyQuery.trim().toLowerCase()) && (historyRisk === 'All' || analysis.riskLevel === historyRisk);
+                } catch {
+                  return false;
+                }
+              }).map((log) => {
                 try {
                   const analysis = JSON.parse(log.analysis);
                   return (
@@ -215,6 +238,16 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
                 }
               })}
             </div>
+            {history.filter((log) => log.analysis.toLowerCase().includes(historyQuery.trim().toLowerCase())).length === 0 && (
+              <p className="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">No assessments match your filters.</p>
+            )}
+          </div>
+        )}
+        {history.length === 0 && (
+          <div className="mt-8 rounded-lg border border-dashed border-slate-300 bg-white p-8 text-center shadow-sm">
+            <h3 className="text-lg font-semibold text-slate-800">No assessments available</h3>
+            <p className="mt-2 text-sm text-slate-500">Run an assessment to start this child&apos;s history.</p>
+            <Link href="/register" className="mt-5 inline-flex rounded-xl bg-teal-700 px-4 py-3 text-sm font-semibold text-white">Start assessment</Link>
           </div>
         )}
       </div>
