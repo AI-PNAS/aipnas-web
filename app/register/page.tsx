@@ -57,7 +57,7 @@ export default function RegisterPage() {
             <div className="mb-8">
               <h1 className="text-4xl font-bold text-gray-900 mb-2">Register Child</h1>
               <p className="text-gray-600">
-                Enter child anthropometric measurements for AI-powered nutritional assessment
+                Complete a five-step WHO-oriented screening assessment with structured clinical inputs and automatic calculations.
               </p>
             </div>
 
@@ -74,13 +74,13 @@ export default function RegisterPage() {
               <h3 className="font-bold text-blue-900 mb-2">About the Assessment</h3>
               <ul className="text-blue-800 text-sm space-y-1">
                 <li>
-                  • <strong>MUAC Classification:</strong> MUAC &lt; 11.5cm = SAM, 11.5-12.5cm = MAM
+                  • <strong>Measured data:</strong> weight, length/height, MUAC, oedema, symptoms, and vital signs
                 </li>
                 <li>
-                  • <strong>BMI Classification:</strong> Based on weight and height measurements
+                  • <strong>Calculated results:</strong> BMI, MUAC screening, growth indicators, and nutrition classification
                 </li>
-                <li>• All assessments follow WHO anthropometric standards</li>
-                <li>• Results are saved for future reference and tracking</li>
+                <li>• <strong>Clinical safety:</strong> danger signs are highlighted for immediate professional review</li>
+                <li>• Results are clinical decision support and require clinician confirmation</li>
               </ul>
             </div>
           </>

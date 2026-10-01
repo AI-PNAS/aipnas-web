@@ -59,7 +59,7 @@ export async function analyzeAndSaveNutrition(childId: string) {
       sex: child.sex as 'M' | 'F',
     } as unknown as ChildData;
 
-    const analysis = analyzeChildNutrition(childData);
+    const analysis = await analyzeChildNutrition(childData);
 
     // Update child record with analysis results
     await prisma.child.update({

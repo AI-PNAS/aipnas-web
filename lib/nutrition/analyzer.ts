@@ -9,6 +9,7 @@ import {
   MedicalRecommendation,
   TrafficLight,
 } from '../types';
+import { calculateZScore } from '@pedi-growth/core';
 
 type WhoReferencePoint = {
   age: number;
@@ -176,15 +177,21 @@ export function classifyBMI(bmi: number): { status: string; severity: RiskLevel 
  * Determine Overall Nutrition Status
  * Priority: MUAC classification takes precedence
  */
-export function determineNutritionStatus(muac: number, bmi: number): NutritionStatus {
-  // MUAC takes priority for acute malnutrition detection
-  if (muac < 11.5) return 'SAM';
-  if (muac >= 11.5 && muac < 12.5) return 'MAM';
+export function determineNutritionStatus(muac: number, bmi: number, bmiForAgeZ: number | null, ageMonths: number, edema = false): NutritionStatus {
+  if (edema) return 'SAM';
 
-  // BMI-based classification for other statuses
-  if (bmi < 18.5) return 'Underweight';
-  if (bmi >= 25 && bmi < 30) return 'Overweight';
-  if (bmi >= 30) return 'Obesity';
+  // MUAC takes priority for acute malnutrition detection
+  if (ageMonths >= 6 && ageMonths < 60) {
+    if (muac < 11.5) return 'SAM';
+    if (muac < 12.5) return 'MAM';
+  }
+
+  // Use age-adjusted BMI when the WHO reference provides it.
+  if (bmiForAgeZ !== null) {
+    if (bmiForAgeZ < -2) return 'Underweight';
+    if (bmiForAgeZ > 3) return 'Obesity';
+    if (bmiForAgeZ > 2) return 'Overweight';
+  }
 
   return 'Normal';
 }
@@ -210,30 +217,46 @@ export function determineRiskLevel(status: NutritionStatus): RiskLevel {
 /**
  * Generate detailed classification based on multiple indicators
  */
-export function generateClassificationDetails(
-  child: ChildData,
-  bmi: number
-): ClassificationDetails {
+export async function generateClassificationDetails(child: ChildData, bmi: number): Promise<ClassificationDetails> {
   const muacStatus = classifyMUAC(child.muac).status;
-  const bmiStatus = classifyBMI(bmi).status;
+  const ageDays = Math.round(child.age * 365.25 / 12);
+  const sex = child.sex === 'F' ? 'female' : 'male';
+  const resultFor = async (indicator: Parameters<typeof calculateZScore>[0]['indicator'], measurement: number, lengthHeight?: number) => {
+    try {
+      return await calculateZScore({ indicator, sex, ageInDays: ageDays, measurement, lengthHeight });
+    } catch (error) {
+      console.warn(`WHO reference unavailable for ${indicator}:`, error);
+      return null;
+    }
+  };
+  const [weightForAgeResult, heightForAgeResult, weightForHeightResult, bmiForAgeResult] = await Promise.all([
+    resultFor('weight-for-age', child.weight),
+    resultFor('length-height-for-age', child.height),
+    resultFor(child.measurementType === 'height' ? 'weight-for-height' : 'weight-for-length', child.weight, child.height),
+    resultFor('bmi-for-age', bmi),
+  ]);
+  const unavailable = (interpretation: string): ClassificationDetails['zScores']['weightForAge'] => ({ value: null, label: 'Unavailable', interpretation });
+  const score = (result: Awaited<ReturnType<typeof calculateZScore>>, name: string) => result
+    ? { value: result.zScore, label: getTrafficLight(result.zScore), interpretation: `${name} z-score from WHO LMS reference` }
+    : unavailable(`${name} cannot be calculated because the required WHO reference range is unavailable`);
+  const weightForAge = score(weightForAgeResult, 'Weight-for-age');
+  const heightForAge = score(heightForAgeResult, 'Length/height-for-age');
+  const weightForHeight = score(weightForHeightResult, 'Weight-for-length/height');
+  const bmiForAge = score(bmiForAgeResult, 'BMI-for-age');
+  const muacScore = child.age >= 6 && child.age < 60
+    ? buildZScore(child.muac, 12.5, 'MUAC')
+    : unavailable('MUAC classification is intended for children aged 6-59 months');
+  const bmiStatus = bmiForAge.value === null ? 'Unavailable' : bmiForAge.value < -2 ? 'Low BMI-for-age' : bmiForAge.value > 2 ? 'High BMI-for-age' : 'Normal BMI-for-age';
 
-  const ageMonths = child.age;
-  const weightForAge = buildZScore(child.weight, expectedWeight(ageMonths, child.sex), 'Weight-for-age');
-  const heightForAge = buildZScore(child.height, expectedHeight(ageMonths, child.sex), 'Height-for-age');
-  const expectedWeightForHeight = expectedBmi(ageMonths, child.sex) * Math.pow(child.height / 100, 2);
-  const weightForHeight = buildZScore(child.weight, expectedWeightForHeight, 'Weight-for-height');
-  const bmiForAge = buildZScore(bmi, expectedBmi(ageMonths, child.sex), 'BMI-for-age');
-  const muacScore = buildZScore(child.muac, 12.5, 'MUAC');
-
-  const stunting = heightForAge.value <= -2;
-  const wasting = child.muac < 12.5 || bmiForAge.value <= -2;
-  const underweight = weightForAge.value <= -2 || bmiForAge.value <= -2;
+  const stunting = heightForAge.value !== null && heightForAge.value <= -2;
+  const wasting = (weightForHeight.value !== null && weightForHeight.value <= -2) || (child.age >= 6 && child.age < 60 && child.muac < 12.5);
+  const underweight = (weightForAge.value !== null && weightForAge.value <= -2) || (bmiForAge.value !== null && bmiForAge.value <= -2);
 
   const riskFactors: string[] = [];
   if (wasting) riskFactors.push('Acute malnutrition (wasting)');
   if (stunting) riskFactors.push('Chronic malnutrition (stunting)');
   if (underweight) riskFactors.push('Low weight for age');
-  if (child.muac < 11.5) riskFactors.push('Critical nutritional status');
+  if (child.age >= 6 && child.age < 60 && child.muac < 11.5) riskFactors.push('Critical MUAC status');
 
   const physicalSignAlerts: string[] = [];
   if (child.edema) physicalSignAlerts.push('Edema observed, which can indicate kwashiorkor');
@@ -376,12 +399,17 @@ export function generateMedicalRecommendation(
  * Main Analysis Function
  * Performs complete nutrition analysis for a child
  */
-export function analyzeChildNutrition(child: ChildData): NutritionAnalysisResult {
+export async function analyzeChildNutrition(child: ChildData): Promise<NutritionAnalysisResult> {
   const bmi = calculateBMI(child.weight, child.height);
-  const nutritionStatus = determineNutritionStatus(child.muac, bmi);
+  const classificationDetails = await generateClassificationDetails(child, bmi);
+  const nutritionStatus = determineNutritionStatus(
+    child.muac,
+    bmi,
+    classificationDetails.zScores.bmiForAge.value,
+    child.age,
+    child.edema,
+  );
   const riskLevel = determineRiskLevel(nutritionStatus);
-
-  const classificationDetails = generateClassificationDetails(child, bmi);
 
   const medicalRec = generateMedicalRecommendation(
     nutritionStatus,
@@ -432,6 +460,6 @@ export function analyzeChildNutrition(child: ChildData): NutritionAnalysisResult
 /**
  * Batch analysis for multiple children
  */
-export function analyzeMultipleChildren(children: ChildData[]): NutritionAnalysisResult[] {
-  return children.map((child) => analyzeChildNutrition(child));
+export async function analyzeMultipleChildren(children: ChildData[]): Promise<NutritionAnalysisResult[]> {
+  return Promise.all(children.map((child) => analyzeChildNutrition(child)));
 }

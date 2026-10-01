@@ -40,6 +40,8 @@ function getTrafficColor(label: string): string {
       return 'border-red-200 bg-red-50 text-red-800';
     case 'Yellow':
       return 'border-yellow-200 bg-yellow-50 text-yellow-800';
+    case 'Unavailable':
+      return 'border-slate-200 bg-slate-50 text-slate-600';
     default:
       return 'border-emerald-200 bg-emerald-50 text-emerald-800';
   }
@@ -132,7 +134,7 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
             {scoreCards.map(({ label, score }) => (
               <div key={label} className={`rounded-2xl border p-4 ${getTrafficColor(score.label)}`}>
                 <p className="text-sm font-medium">{label}</p>
-                <p className="mt-2 text-2xl font-semibold">{score.value}</p>
+                <p className="mt-2 text-2xl font-semibold">{score.value === null ? 'Unavailable' : score.value}</p>
                 <p className="mt-1 text-xs leading-5">{score.label}: {score.interpretation}</p>
               </div>
             ))}

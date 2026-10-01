@@ -3,13 +3,17 @@
 export type Sex = 'M' | 'F';
 export type NutritionStatus = 'SAM' | 'MAM' | 'Underweight' | 'Normal' | 'Overweight' | 'Obesity';
 export type RiskLevel = 'Low' | 'Medium' | 'High';
-export type TrafficLight = 'Red' | 'Yellow' | 'Green';
+export type TrafficLight = 'Red' | 'Yellow' | 'Green' | 'Unavailable';
 
 export interface ChildData {
   id?: string;
+  patientId?: string;
   name: string;
+  dateOfBirth?: string;
   age: number;
   sex: Sex;
+  measurementType?: 'length' | 'height';
+  assessmentSetting?: string;
   religion?: string;
   continent?: string;
   country?: string;
@@ -70,7 +74,7 @@ export interface ChildData {
 }
 
 export interface ZScoreEntry {
-  value: number;
+  value: number | null;
   label: TrafficLight;
   interpretation: string;
 }

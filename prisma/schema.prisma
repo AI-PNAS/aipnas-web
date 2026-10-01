@@ -12,9 +12,13 @@ generator client {
 
 model Child {
   id                  String      @id @default(cuid())
+  patientId           String?     @unique
   name                String
+  dateOfBirth         String?
   age                 Float       // age in months
   sex                 String      // "M" or "F"
+  measurementType     String?     // recumbent length or standing height
+  assessmentSetting   String?
   religion            String?
   continent           String?
   country             String?
