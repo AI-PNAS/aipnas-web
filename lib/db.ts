@@ -4,8 +4,10 @@ import { PrismaClient } from '@prisma/client';
 import { ChildData } from './types';
 import { analyzeChildNutrition } from './nutrition/analyzer';
 
+const isNextBuild = process.env.NEXT_PHASE === 'phase-production-build';
+
 if (!process.env.DATABASE_URL) {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' && !isNextBuild) {
     throw new Error('DATABASE_URL must be configured in the Vercel project environment.');
   }
 

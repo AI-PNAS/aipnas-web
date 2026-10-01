@@ -35,7 +35,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
     <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-8">
         <Link href="/" className="flex items-center gap-3">
-          <Image src="/logo/ai-pnas-logo.svg" alt="AI PNAS logo" width={216} height={72} priority className="h-[50px] w-auto md:h-[68px]" />
+          <Image src="/logo/ai-pnas-logo.png" alt="AI PNAS logo" width={1254} height={1254} priority className="h-[52px] w-auto md:h-[72px]" />
         </Link>
 
         <nav className="hidden items-center gap-7 text-sm font-medium md:flex">

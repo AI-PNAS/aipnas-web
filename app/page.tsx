@@ -29,7 +29,7 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-7xl px-6 py-10 md:px-10 md:py-14">
           <header className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3">
-              <Image src="/logo/ai-pnas-logo.svg" alt="AI PNAS logo" width={216} height={72} priority className="h-[50px] w-auto md:h-[68px]" />
+              <Image src="/logo/ai-pnas-logo.png" alt="AI PNAS logo" width={1254} height={1254} priority className="h-[52px] w-auto md:h-[72px]" />
             </Link>
 
             <div className="hidden items-center gap-7 text-sm font-medium text-slate-600 md:flex">

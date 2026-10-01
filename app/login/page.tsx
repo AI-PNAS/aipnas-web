@@ -122,7 +122,7 @@ function LoginForm() {
         <div className="grid gap-8 rounded-[2rem] border border-white/10 bg-slate-950/70 p-6 shadow-2xl shadow-slate-950/40 backdrop-blur-xl md:grid-cols-[1fr_1fr] md:p-8">
           <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
             <div className="mx-auto max-w-[460px]">
-              <Image src="/logo/ai-pnas-logo.svg" alt="AI PNAS logo" width={720} height={240} className="h-auto w-full" priority />
+              <Image src="/logo/ai-pnas-logo.png" alt="AI PNAS logo" width={1254} height={1254} className="h-auto w-full max-w-[440px]" priority />
             </div>
             <h1 className="mt-4 text-2xl font-semibold text-white">Welcome to AI-PNAS</h1>
             <p className="mt-2 text-sm leading-7 text-slate-300">
