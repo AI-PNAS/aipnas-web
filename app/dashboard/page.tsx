@@ -42,10 +42,7 @@ function PublicDashboardPreview() {
       <div className="relative mx-auto max-w-7xl px-6 py-8 md:px-10 md:py-12">
         <header className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <span className="logo-tricolor flex h-14 w-14 items-center justify-center rounded-2xl bg-white p-1 shadow-lg shadow-black/20">
-              <Image src="/logo-aipnas.svg" alt="AI-PNAS logo" width={52} height={52} priority />
-            </span>
-            <span className="text-sm font-semibold tracking-[0.2em] text-teal-100">AI PNAS</span>
+            <Image src="/logo/ai-pnas-logo.svg" alt="AI PNAS logo" width={216} height={72} priority className="h-[50px] w-auto md:h-[68px]" />
           </Link>
           <Link href="/login" className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10">Sign in</Link>
         </header>

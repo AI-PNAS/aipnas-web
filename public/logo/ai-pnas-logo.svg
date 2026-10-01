@@ -1,0 +1,22 @@
+<svg width="720" height="240" viewBox="0 0 720 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="africa" x1="36" y1="24" x2="200" y2="216" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EF1B23"/><stop offset="0.48" stop-color="#F7C928"/><stop offset="1" stop-color="#07883F"/>
+    </linearGradient>
+    <linearGradient id="child" x1="98" y1="82" x2="140" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C97925"/><stop offset="1" stop-color="#6B2D12"/>
+    </linearGradient>
+  </defs>
+  <path d="M111 20C145 11 182 29 193 55C207 88 198 111 214 131C226 147 213 170 192 184C173 197 153 218 127 218C101 218 83 198 69 178C55 158 37 143 35 119C33 96 50 80 48 59C46 39 74 28 111 20Z" fill="white" stroke="url(#africa)" stroke-width="12"/>
+  <path d="M72 72C99 46 146 41 177 62M67 165C93 190 139 197 177 172" stroke="#07883F" stroke-width="9" stroke-linecap="round"/>
+  <path d="M101 98C110 87 126 83 138 91C151 99 157 118 153 137C149 158 134 175 115 174C94 173 83 152 85 130C86 117 92 106 101 98Z" fill="url(#child)"/>
+  <circle cx="119" cy="75" r="24" fill="url(#child)"/>
+  <path d="M83 146C107 157 135 160 158 153" stroke="white" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+  <circle cx="166" cy="71" r="30" fill="#E6F8EC" stroke="#07883F" stroke-width="7"/>
+  <path d="M151 55V87M166 55V87M181 55V87M151 69H159M166 69H174M181 69H189" stroke="#07883F" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="151" cy="101" r="5" fill="#07883F"/><circle cx="166" cy="101" r="5" fill="#07883F"/><circle cx="181" cy="101" r="5" fill="#07883F"/>
+  <text x="166" y="78" text-anchor="middle" fill="#07883F" font-family="Arial, sans-serif" font-size="24" font-weight="800">AI</text>
+  <text x="252" y="106" fill="#07883F" font-family="Arial, sans-serif" font-size="66" font-weight="800" letter-spacing="2">AI PNAS</text>
+  <text x="257" y="145" fill="#334155" font-family="Arial, sans-serif" font-size="18" font-weight="600" letter-spacing="1">AI-POWERED PEDIATRIC NUTRITION</text>
+  <path d="M255 166H562" stroke="#F7C928" stroke-width="6" stroke-linecap="round"/><path d="M255 166H373" stroke="#EF1B23" stroke-width="6" stroke-linecap="round"/>
+</svg>

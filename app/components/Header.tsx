@@ -35,13 +35,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
     <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-8">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-teal-200 bg-teal-50 p-1 shadow-sm">
-            <Image src="/logo-aipnas.svg" alt="AI-PNAS logo" width={32} height={32} priority />
-          </div>
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-teal-700">AI PNAS</p>
-            <p className="text-sm font-medium text-slate-700">Pediatric Nutrition AI</p>
-          </div>
+          <Image src="/logo/ai-pnas-logo.svg" alt="AI PNAS logo" width={216} height={72} priority className="h-[50px] w-auto md:h-[68px]" />
         </Link>
 
         <nav className="hidden items-center gap-7 text-sm font-medium md:flex">

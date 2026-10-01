@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: 'AI-PNAS | Pediatric Nutritional Assessment System',
   description: 'AI-assisted pediatric nutrition assessment for growth monitoring and professional review.',
   icons: {
-    icon: '/logo-aipnas.svg',
+    icon: '/logo/ai-pnas-logo.svg',
   },
 };
 
