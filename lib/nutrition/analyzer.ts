@@ -11,69 +11,6 @@ import {
 } from '../types';
 import { calculateZScore } from '@pedi-growth/core';
 
-type WhoReferencePoint = {
-  age: number;
-  weight: number;
-  height: number;
-  bmi: number;
-};
-
-const WHO_REFERENCE: Record<'M' | 'F', WhoReferencePoint[]> = {
-  M: [
-    { age: 0, weight: 3.3, height: 49.9, bmi: 13.4 },
-    { age: 6, weight: 7.9, height: 67.6, bmi: 17.2 },
-    { age: 12, weight: 9.6, height: 75.7, bmi: 16.9 },
-    { age: 24, weight: 12.2, height: 87.1, bmi: 16.4 },
-    { age: 36, weight: 14.3, height: 95.0, bmi: 16.1 },
-    { age: 48, weight: 16.3, height: 102.0, bmi: 15.8 },
-    { age: 60, weight: 18.3, height: 109.2, bmi: 15.6 },
-  ],
-  F: [
-    { age: 0, weight: 3.2, height: 49.1, bmi: 13.3 },
-    { age: 6, weight: 7.3, height: 65.7, bmi: 17.0 },
-    { age: 12, weight: 8.9, height: 74.0, bmi: 16.7 },
-    { age: 24, weight: 11.5, height: 85.7, bmi: 16.2 },
-    { age: 36, weight: 13.9, height: 94.1, bmi: 15.9 },
-    { age: 48, weight: 16.0, height: 101.2, bmi: 15.7 },
-    { age: 60, weight: 18.0, height: 108.2, bmi: 15.4 },
-  ],
-};
-
-function interpolateReference(points: WhoReferencePoint[], ageMonths: number): WhoReferencePoint {
-  if (ageMonths <= points[0].age) {
-    return points[0];
-  }
-
-  if (ageMonths >= points[points.length - 1].age) {
-    return points[points.length - 1];
-  }
-
-  const upperIndex = points.findIndex((point) => point.age >= ageMonths);
-  const lower = points[upperIndex - 1];
-  const upper = points[upperIndex];
-  const span = upper.age - lower.age;
-  const ratio = span === 0 ? 0 : (ageMonths - lower.age) / span;
-
-  return {
-    age: ageMonths,
-    weight: lower.weight + (upper.weight - lower.weight) * ratio,
-    height: lower.height + (upper.height - lower.height) * ratio,
-    bmi: lower.bmi + (upper.bmi - lower.bmi) * ratio,
-  };
-}
-
-function expectedWeight(ageMonths: number, sex: 'M' | 'F'): number {
-  return interpolateReference(WHO_REFERENCE[sex], ageMonths).weight;
-}
-
-function expectedHeight(ageMonths: number, sex: 'M' | 'F'): number {
-  return interpolateReference(WHO_REFERENCE[sex], ageMonths).height;
-}
-
-function expectedBmi(ageMonths: number, sex: 'M' | 'F'): number {
-  return interpolateReference(WHO_REFERENCE[sex], ageMonths).bmi;
-}
-
 function getTrafficLight(value: number): TrafficLight {
   if (value <= -3 || value >= 3) {
     return 'Red';

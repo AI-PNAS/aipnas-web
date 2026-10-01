@@ -49,7 +49,7 @@ function getTrafficColor(label: string): string {
 
 export default function AnalysisResult({ result }: AnalysisResultProps) {
   const alertCount = result.physicalSignAlerts.length + result.vitalSignAlerts.length;
-  const scoreCards: Array<{ label: string; score: { value: number; label: string; interpretation: string } }> = [
+  const scoreCards: Array<{ label: string; score: NutritionAnalysisResult['zScores']['weightForAge'] }> = [
     { label: 'Weight-for-Age', score: result.zScores.weightForAge },
     { label: 'Height-for-Age', score: result.zScores.heightForAge },
     { label: 'Weight-for-Height', score: result.zScores.weightForHeight },
