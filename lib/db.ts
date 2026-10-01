@@ -4,10 +4,18 @@ import { PrismaClient } from '@prisma/client';
 import { ChildData } from './types';
 import { analyzeChildNutrition } from './nutrition/analyzer';
 
-process.env.DATABASE_URL = process.env.DATABASE_URL || 'file:./prisma/dev.db';
+if (!process.env.DATABASE_URL) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('DATABASE_URL must be configured in the Vercel project environment.');
+  }
+
+  process.env.DATABASE_URL = 'file:./prisma/dev.db';
+}
 
 // Singleton pattern for Prisma Client
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const globalForPrisma = globalThis as typeof globalThis & {
+  prisma?: PrismaClient;
+};
 
 export const prisma =
   globalForPrisma.prisma ||
@@ -15,7 +23,7 @@ export const prisma =
     log: process.env.NODE_ENV === 'development' ? ['query'] : [],
   });
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+globalForPrisma.prisma = prisma;
 
 /**
  * Register a new child

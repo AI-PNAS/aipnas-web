@@ -96,7 +96,14 @@ function LoginForm() {
 
       const result = await response.json();
       if (!response.ok) {
-        throw new Error(result.message || 'Failed to create account');
+        const validationMessages = Array.isArray(result.errors)
+          ? result.errors
+              .map((entry: { message?: unknown }) => entry.message)
+              .filter((message: unknown): message is string => typeof message === 'string')
+              .join(' ')
+          : '';
+
+        throw new Error(validationMessages || result.message || 'Failed to create account');
       }
 
       setSuccess('Account created successfully. Redirecting...');

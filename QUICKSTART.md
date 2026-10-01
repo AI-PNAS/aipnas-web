@@ -11,8 +11,12 @@ cd /workspaces/aipnas-web
 # Install dependencies (already done)
 npm install
 
-# Environment is already configured
-cat .env
+# Configure the local database and session signing key
+cp .env.example .env.local
+# Replace SESSION_SECRET in .env.local with a long random value.
+
+# Apply the Prisma schema when setting up a fresh database
+npx prisma db push
 ```
 
 ### 2. Start Development Server
