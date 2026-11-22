@@ -11,6 +11,7 @@ interface HeaderProps {
 export default function Header({ currentPage = 'home' }: HeaderProps) {
   const [language, setLanguage] = useState<'en' | 'am'>('en');
   const [isOpen, setIsOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -25,11 +26,19 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
     { href: '/', label: language === 'en' ? 'Home' : 'መነሻ' },
     { href: '/about', label: language === 'en' ? 'About' : 'ስለ እኛ' },
     { href: '/services', label: language === 'en' ? 'Services' : 'አገልግሎቶች' },
-    { href: '/dashboard', label: language === 'en' ? 'Dashboard' : 'ዳሽቦርድ' },
+    { href: '/register', label: language === 'en' ? 'Nutrition Screening' : 'የአመጋገብ ግምገማ' },
+    { href: '/global-impact', label: language === 'en' ? 'Global Impact' : 'ዓለምአቀፍ ተፅዕኖ' },
+    { href: '/resources', label: language === 'en' ? 'Resources' : 'ግብዓቶች' },
+    { href: '/our-team', label: language === 'en' ? 'Our Team' : 'ቡድን' },
+    { href: '/partners', label: language === 'en' ? 'Partners' : 'አጋሮች' },
+    { href: '/contact', label: language === 'en' ? 'Contact' : 'አድራሻ' },
   ];
 
   const pageLinkStyles = (page: string) =>
-    `transition ${currentPage === page ? 'text-slate-900' : 'text-slate-600 hover:text-slate-900'}`;
+    `border-b-2 pb-1 transition ${currentPage === page ? 'border-blue-700 text-slate-950' : 'border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-950'}`;
+
+  const primaryLinks = navLinks.slice(0, 5);
+  const moreLinks = navLinks.slice(5);
 
   return (
     <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md">
@@ -38,12 +47,41 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
           <Image src="/logo/ai-pnas-logo.png" alt="AI PNAS logo" width={1254} height={1254} priority className="h-[52px] w-auto md:h-[72px]" />
         </Link>
 
-        <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
-          {navLinks.map((item) => (
-            <Link key={item.href} href={item.href} className={pageLinkStyles(item.href.replace('/', '') || 'home')}>
+        <nav className="hidden items-center gap-4 text-sm font-semibold lg:flex xl:gap-5" aria-label="Primary navigation">
+          {primaryLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={pageLinkStyles(item.href.replace('/', '') || 'home')}
+              aria-current={currentPage === (item.href.replace('/', '') || 'home') ? 'page' : undefined}
+            >
               {item.label}
             </Link>
           ))}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsMoreOpen((value) => !value)}
+              className="border-b-2 border-transparent pb-1 text-slate-600 transition hover:border-slate-300 hover:text-slate-950"
+              aria-expanded={isMoreOpen}
+            >
+              {language === 'en' ? 'More ▾' : 'ተጨማሪ ▾'}
+            </button>
+            {isMoreOpen && (
+              <div className="absolute right-0 top-9 z-50 w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                {moreLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMoreOpen(false)}
+                    className="block rounded-xl px-3 py-2.5 text-slate-700 hover:bg-slate-50 hover:text-slate-950"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">

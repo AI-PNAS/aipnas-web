@@ -67,7 +67,7 @@ export default function RegisterPage() {
             <div className="mb-8">
               <h1 className="text-4xl font-bold text-gray-900 mb-2">Register Child</h1>
               <p className="text-gray-600">
-                Complete a five-step WHO-oriented screening assessment with structured clinical inputs and automatic calculations.
+                Complete a simple nutrition-only screening assessment with WHO-aligned calculations and clear missing-data warnings.
               </p>
             </div>
 
@@ -77,6 +77,11 @@ export default function RegisterPage() {
                 <p>{error}</p>
               </div>
             )}
+            {savedMessage && (
+              <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-emerald-900">
+                {savedMessage}
+              </div>
+            )}
 
             <RegistrationForm onSubmit={handleSubmit} isLoading={isLoading} />
 
@@ -84,12 +89,12 @@ export default function RegisterPage() {
               <h3 className="font-bold text-blue-900 mb-2">About the Assessment</h3>
               <ul className="text-blue-800 text-sm space-y-1">
                 <li>
-                  • <strong>Measured data:</strong> weight, length/height, MUAC, oedema, symptoms, and vital signs
+                  • <strong>Measured data:</strong> weight, length/height, MUAC, and bilateral pitting oedema
                 </li>
                 <li>
                   • <strong>Calculated results:</strong> BMI, MUAC screening, growth indicators, and nutrition classification
                 </li>
-                <li>• <strong>Clinical safety:</strong> danger signs are highlighted for immediate professional review</li>
+                <li>• <strong>Clinical safety:</strong> urgent oedema and abnormal findings require professional review</li>
                 <li>• Results are clinical decision support and require clinician confirmation</li>
               </ul>
             </div>

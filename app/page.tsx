@@ -119,13 +119,16 @@ export default function HomePage() {
             <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">Make difficult nutrition cases visible sooner.</h2>
             <p className="mt-4 text-base leading-7 text-slate-300">AI PNAS helps care teams turn measurements into a clear next step for every child.</p>
           </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
             {childStories.map((story, index) => (
               <figure key={story.src} className="child-story-card" style={{ animationDelay: `${index * 180}ms` }}>
                 <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-800">
                   <Image src={story.src} alt={story.alt} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition duration-700 hover:scale-105" />
                 </div>
-                <figcaption className="mt-3 text-sm font-semibold text-teal-100">{story.label}</figcaption>
+                <figcaption className="mt-4">
+                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-teal-300">{story.label}</p>
+                  <p className="mt-2 text-lg font-semibold text-white">{story.title}</p>
+                </figcaption>
               </figure>
             ))}
           </div>
