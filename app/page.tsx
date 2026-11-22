@@ -26,6 +26,17 @@ const founders = [
   { name: 'Addisu Yirdaw', role: 'Co-Founder | Technology Lead', initials: 'AY' },
 ];
 
+const platformFeatures = [
+  { title: 'AI-Assisted Nutrition Assessment', description: 'Support real measurements and image-quality review without unsupported visual diagnoses.' },
+  { title: 'WHO-Based Growth Monitoring', description: 'Use validated Z-scores and transparent anthropometric classifications.' },
+  { title: 'Child Health Records', description: 'Keep permanent child IDs and separate longitudinal assessment history.' },
+  { title: 'Malnutrition Risk Screening', description: 'Identify severe, moderate, normal, and incomplete nutrition findings.' },
+  { title: 'Offline-First Assessment', description: 'Save essential workflows and synchronize when connectivity returns.' },
+  { title: 'Nutrition Education', description: 'Provide practical caregiver and community nutrition resources.' },
+  { title: 'Professional Dashboard', description: 'Review actual records, follow-up needs, and authorized activity.' },
+  { title: 'Global Health Impact', description: 'View privacy-preserving aggregate geography and epidemiology data.' },
+];
+
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
@@ -119,6 +130,33 @@ export default function HomePage() {
               </figure>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-16 md:px-10">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-sm font-bold uppercase tracking-[0.25em] text-blue-700">Platform capabilities</p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+              One connected child nutrition platform.
+            </h2>
+          </div>
+          <Link href="/services" className="font-bold text-blue-700">Explore all services →</Link>
+        </div>
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {platformFeatures.map((feature, index) => (
+            <article
+              key={feature.title}
+              className="rounded-[1.75rem] border border-sky-100 bg-gradient-to-br from-white to-sky-50/60 p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
+              style={{ animationDelay: `${index * 70}ms` }}
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-sm font-black text-blue-700">
+                {String(index + 1).padStart(2, '0')}
+              </div>
+              <h3 className="mt-5 text-lg font-black text-slate-950">{feature.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600">{feature.description}</p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -248,9 +286,9 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-5">
             <Link href="/about" className="hover:text-slate-900">About</Link>
             <Link href="/services" className="hover:text-slate-900">Services</Link>
-            <Link href="#" className="hover:text-slate-900">Privacy</Link>
-            <Link href="#" className="hover:text-slate-900">Terms</Link>
-            <Link href="#" className="hover:text-slate-900">Contact</Link>
+            <Link href="/privacy" className="hover:text-slate-900">Privacy</Link>
+            <Link href="/terms" className="hover:text-slate-900">Terms</Link>
+            <Link href="/contact" className="hover:text-slate-900">Contact</Link>
           </div>
         </div>
       </footer>
