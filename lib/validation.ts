@@ -17,6 +17,7 @@ export const registerChildSchema = z.object({
   patientId: z.string().trim().max(50).optional(),
   name: z.string().trim().min(1, 'Name is required').max(100),
   dateOfBirth: z.string().date().optional(),
+  assessmentDate: z.string().date().optional(),
   age: z.coerce.number().nonnegative('Age must be zero or greater'),
   sex: z.enum(['M', 'F']),
   measurementType: z.enum(['length', 'height']).optional(),

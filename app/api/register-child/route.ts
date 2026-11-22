@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { registerChild, analyzeAndSaveNutrition } from '@/lib/db';
 import { registerChildSchema } from '@/lib/validation';
 import { z } from 'zod';
+import { randomUUID } from 'crypto';
 import { getSessionUser } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
@@ -24,6 +25,8 @@ export async function POST(request: NextRequest) {
 
     // Validate input
     const validatedData = registerChildSchema.parse(data);
+    if (!validatedData.patientId) {
+      validatedData.patientId = `AI-PNAS-${randomUUID().replace(/-/g, '').slice(0, 16).toUpperCase()}`;
 
     // Register child
     const child = await registerChild(validatedData, user.id);

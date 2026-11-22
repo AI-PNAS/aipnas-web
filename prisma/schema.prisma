@@ -16,6 +16,7 @@ model Child {
   patientId                     String?  @unique
   name                          String
   dateOfBirth                   String?
+  assessmentDate                String?
   age                           Float // age in months
   sex                           String // "M" or "F"
   measurementType               String? // recumbent length or standing height
@@ -100,7 +101,8 @@ model Child {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdBy User? @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy User?        @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  images    ChildImage[]
 
   @@index([nutritionStatus])
   @@index([riskLevel])
@@ -116,15 +118,33 @@ model AnalysisLog {
 }
 
 model User {
-  id           String   @id @default(cuid())
+  id           String       @id @default(cuid())
   fullName     String
-  email        String   @unique
+  email        String       @unique
   passwordHash String
-  role         String   @default("family")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  role         String       @default("family")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   children     Child[]
+  childImages  ChildImage[]
 
   @@index([email])
   @@index([role])
+}
+
+model ChildImage {
+  id           String   @id @default(cuid())
+  childId      String
+  uploadedById String
+  mimeType     String
+  data         String
+  consent      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  child      Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+  uploadedBy User  @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([childId])
+  @@index([uploadedById])
+  @@index([createdAt])
 }

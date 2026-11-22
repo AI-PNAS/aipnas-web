@@ -8,6 +8,8 @@ interface AnalysisResultProps {
 
 function getRiskColor(riskLevel: string): string {
   switch (riskLevel) {
+    case 'Incomplete':
+      return 'bg-slate-100 border-slate-400 text-slate-800';
     case 'High':
       return 'bg-red-100 border-red-500 text-red-900';
     case 'Medium':

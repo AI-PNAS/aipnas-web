@@ -137,6 +137,13 @@ export function determineNutritionStatus(
 
   // Use age-adjusted BMI when the WHO reference provides it.
   if (bmiForAgeZ !== null) {
+    if (ageMonths >= 60 && ageMonths <= 228) {
+      if (bmiForAgeZ < -3) return 'Underweight';
+      if (bmiForAgeZ < -2) return 'Underweight';
+      if (bmiForAgeZ > 2) return 'Obesity';
+      if (bmiForAgeZ > 1) return 'Overweight';
+      return 'Normal';
+    }
     if (bmiForAgeZ < -2) return 'Underweight';
     if (bmiForAgeZ > 3) return 'Obesity';
     if (bmiForAgeZ > 2) return 'Overweight';
@@ -167,8 +174,21 @@ export function determineRiskLevel(status: NutritionStatus): RiskLevel {
  * Generate detailed classification based on multiple indicators
  */
 export async function generateClassificationDetails(child: ChildData, bmi: number): Promise<ClassificationDetails> {
-  const muacStatus = classifyMUAC(child.muac).status;
-  const ageDays = Math.round(child.age * 365.25 / 12);
+  const exactAgeDays = child.dateOfBirth && child.assessmentDate
+    ? Math.max(
+        0,
+        Math.round(
+          (new Date(`${child.assessmentDate}T00:00:00Z`).getTime() -
+            new Date(`${child.dateOfBirth}T00:00:00Z`).getTime()) /
+            86400000,
+        ),
+      )
+    : null;
+  const ageDays = exactAgeDays ?? Math.round(child.age * 365.25 / 12);
+  const ageMonths = ageDays / 30.4375;
+  const muacStatus = ageMonths >= 6 && ageMonths < 60
+    ? classifyMUAC(child.muac).status
+    : 'MUAC cutoff not applicable outside 6-59 months';
   const sex = child.sex === 'F' ? 'female' : 'male';
   const resultFor = async (indicator: Parameters<typeof calculateZScore>[0]['indicator'], measurement: number, lengthHeight?: number) => {
     try {
@@ -359,7 +379,22 @@ export async function analyzeChildNutrition(child: ChildData): Promise<Nutrition
     child.age,
     child.edema,
   );
-  const riskLevel = determineRiskLevel(nutritionStatus);
+  const incompleteAssessment =
+    child.edemaDetails === 'Not assessed' ||
+    classificationDetails.zScores.weightForAge.label === 'Unavailable' ||
+    classificationDetails.zScores.heightForAge.label === 'Unavailable' ||
+    classificationDetails.zScores.weightForHeight.label === 'Unavailable';
+  let riskLevel: RiskLevel = incompleteAssessment ? 'Incomplete' : determineRiskLevel(nutritionStatus);
+  const severeFinding =
+    Boolean(child.edema) ||
+    (classificationDetails.zScores.weightForHeight.value !== null &&
+      classificationDetails.zScores.weightForHeight.value < -3) ||
+    (classificationDetails.zScores.weightForAge.value !== null &&
+      classificationDetails.zScores.weightForAge.value < -3) ||
+    (classificationDetails.zScores.heightForAge.value !== null &&
+      classificationDetails.zScores.heightForAge.value < -3) ||
+    (child.age >= 6 && child.age < 60 && child.muac < 11.5);
+  if (severeFinding) riskLevel = 'High';
 
   const medicalRec = generateMedicalRecommendation(
     nutritionStatus,

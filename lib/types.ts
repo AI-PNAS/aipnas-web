@@ -2,7 +2,7 @@
 
 export type Sex = 'M' | 'F';
 export type NutritionStatus = 'SAM' | 'MAM' | 'Underweight' | 'Normal' | 'Overweight' | 'Obesity';
-export type RiskLevel = 'Low' | 'Medium' | 'High';
+export type RiskLevel = 'Low' | 'Medium' | 'High' | 'Incomplete';
 export type TrafficLight = 'Red' | 'Yellow' | 'Green' | 'Unavailable';
 
 export interface ChildData {
@@ -10,6 +10,7 @@ export interface ChildData {
   patientId?: string;
   name: string;
   dateOfBirth?: string;
+  assessmentDate?: string;
   age: number;
   sex: Sex;
   measurementType?: 'length' | 'height';

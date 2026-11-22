@@ -27,6 +27,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
     { href: '/about', label: language === 'en' ? 'About' : 'ስለ እኛ' },
     { href: '/services', label: language === 'en' ? 'Services' : 'አገልግሎቶች' },
     { href: '/register', label: language === 'en' ? 'Nutrition Screening' : 'የአመጋገብ ግምገማ' },
+    { href: '/ai-camera', label: language === 'en' ? 'AI Camera' : 'AI ካሜራ' },
     { href: '/global-impact', label: language === 'en' ? 'Global Impact' : 'ዓለምአቀፍ ተፅዕኖ' },
     { href: '/resources', label: language === 'en' ? 'Resources' : 'ግብዓቶች' },
     { href: '/our-team', label: language === 'en' ? 'Our Team' : 'ቡድን' },
@@ -37,8 +38,8 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
   const pageLinkStyles = (page: string) =>
     `border-b-2 pb-1 transition ${currentPage === page ? 'border-blue-700 text-slate-950' : 'border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-950'}`;
 
-  const primaryLinks = navLinks.slice(0, 5);
-  const moreLinks = navLinks.slice(5);
+  const primaryLinks = navLinks.slice(0, 6);
+  const moreLinks = navLinks.slice(6);
 
   return (
     <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md">
@@ -84,7 +85,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
           </div>
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3 lg:flex">
           <div className="inline-flex rounded-full border border-slate-200 bg-slate-100 p-1">
             <button
               type="button"
@@ -112,7 +113,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
         <button
           type="button"
           onClick={() => setIsOpen((value) => !value)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-lg text-slate-700 md:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-lg text-slate-700 lg:hidden"
           aria-label="Toggle navigation"
           aria-expanded={isOpen}
           aria-controls="mobile-navigation"
@@ -122,7 +123,7 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
       </div>
 
       {isOpen && (
-        <div id="mobile-navigation" className="border-t border-slate-200 bg-white px-4 py-4 md:hidden">
+        <div id="mobile-navigation" className="border-t border-slate-200 bg-white px-4 py-4 lg:hidden">
           <div className="flex flex-col gap-3">
             {navLinks.map((item) => (
               <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className="text-sm font-medium text-slate-700">

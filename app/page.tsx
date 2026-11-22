@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import Header from '@/app/components/Header';
 
 const steps = [
   { title: 'Register child', description: 'Create a child profile with basic demographics and health context.' },
@@ -20,32 +21,18 @@ const childStories = [
   { src: '/public/images/aipnas-logo.png/b.png', alt: 'Community child nutrition monitoring', label: 'Focused Support', title: 'Community child nutrition monitoring' },
 ];
 
+const founders = [
+  { name: 'Belay Kassanew', role: 'Founder | Public Health Lead', initials: 'BK', image: '/belay.png' },
+  { name: 'Addisu Yirdaw', role: 'Co-Founder | Technology Lead', initials: 'AY' },
+];
+
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
       <section className="relative overflow-hidden border-b border-slate-200 bg-white">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(13,148,136,0.12),transparent_30%),radial-gradient(circle_at_top_right,rgba(14,165,233,0.10),transparent_30%)]" />
         <div className="relative mx-auto max-w-7xl px-6 py-10 md:px-10 md:py-14">
-          <header className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3">
-              <Image src="/logo/ai-pnas-logo.png" alt="AI PNAS logo" width={1254} height={1254} priority className="h-[52px] w-auto md:h-[72px]" />
-            </Link>
-
-            <div className="hidden items-center gap-7 text-sm font-medium text-slate-600 md:flex">
-              <Link href="/" className="text-slate-900">Home</Link>
-              <Link href="/about" className="hover:text-slate-900">About</Link>
-              <Link href="/services" className="hover:text-slate-900">Services</Link>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Link href="/login" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
-                Login
-              </Link>
-              <Link href="/login?mode=register" className="rounded-full bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-600">
-                Create Account
-              </Link>
-            </div>
-          </header>
+          <Header currentPage="home" />
 
           <div className="mt-12 grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]">
             <div className="homepage-hero-text">
@@ -174,6 +161,42 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-6 py-16 md:px-10">
+        <div className="text-center">
+          <p className="text-sm font-bold uppercase tracking-[0.25em] text-teal-700">Leadership</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">Meet the Founders</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600">
+            Combining public health expertise and technology to improve child nutrition worldwide.
+          </p>
+          <p className="mt-3 text-sm font-bold text-slate-800">
+            Two Founders. One Mission. Healthier Futures for Every Child.
+          </p>
+        </div>
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          {founders.map((founder, index) => (
+            <article
+              key={founder.name}
+              className="founder-card rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm"
+              style={{ animationDelay: `${index * 140}ms` }}
+            >
+              <div className="flex items-center gap-4">
+                {founder.image ? (
+                  <Image src={founder.image} alt="Belay Kassanew" width={128} height={128} className="h-16 w-16 shrink-0 rounded-full border-4 border-white object-cover shadow-lg" />
+                ) : (
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-blue-700 to-teal-600 text-xl font-black text-white shadow-lg">
+                    {founder.initials}
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-xl font-black text-slate-950">{founder.name}</h3>
+                  <p className="mt-1 text-sm font-bold text-blue-700">{founder.role}</p>
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 

@@ -195,9 +195,10 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
     const muacCm = numberOrUndefined(form.muac);
 
     onSubmit({
-      patientId: form.patientId.trim() || `AI-PNAS-${Date.now().toString().slice(-8)}`,
+      patientId: form.patientId.trim() || undefined,
       name: form.name.trim(),
       dateOfBirth: form.dateOfBirth || undefined,
+      assessmentDate: form.assessmentDate || undefined,
       age: Number(form.age || 0),
       sex: form.sex === 'F' ? 'F' : 'M',
       country: form.country || undefined,
