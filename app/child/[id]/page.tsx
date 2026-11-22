@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Header from '@/app/components/Header';
 import AnalysisResult from '@/app/components/AnalysisResult';
 import { NutritionAnalysisResult } from '@/lib/types';
@@ -61,6 +62,7 @@ function getTrafficLabel(value: number | null): 'Red' | 'Yellow' | 'Green' {
 }
 
 export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
+  const router = useRouter();
   const [child, setChild] = useState<ChildData | null>(null);
   const [history, setHistory] = useState<AnalysisLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,6 +86,10 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
         const response = await fetch(`/api/child/${childId}`);
         const data = await response.json();
 
+        if (response.status === 401) {
+          router.push('/login');
+          return;
+        }
         if (!data.success) {
           throw new Error(data.message || 'Failed to fetch child details');
         }
@@ -98,7 +104,7 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
     };
 
     fetchChildDetails();
-  }, [childId]);
+  }, [childId, router]);
 
   if (loading) {
     return (
@@ -147,27 +153,27 @@ export default function ChildDetailsPage({ params }: ChildDetailsPageProps) {
     vitalSignAlerts: child.vitalSignAlerts ? child.vitalSignAlerts.split(' | ') : [],
     zScores: {
       weightForAge: {
-        value: child.weightForAgeZ || 0,
+        value: child.weightForAgeZ,
         label: getTrafficLabel(child.weightForAgeZ),
         interpretation: 'Persisted from the latest analysis',
       },
       heightForAge: {
-        value: child.heightForAgeZ || 0,
+        value: child.heightForAgeZ,
         label: getTrafficLabel(child.heightForAgeZ),
         interpretation: 'Persisted from the latest analysis',
       },
       weightForHeight: {
-        value: child.weightForHeightZ || 0,
+        value: child.weightForHeightZ,
         label: getTrafficLabel(child.weightForHeightZ),
         interpretation: 'Persisted from the latest analysis',
       },
       bmiForAge: {
-        value: child.bmiForAgeZ || 0,
+        value: child.bmiForAgeZ,
         label: getTrafficLabel(child.bmiForAgeZ),
         interpretation: 'Persisted from the latest analysis',
       },
       muac: {
-        value: child.muacZ || 0,
+        value: child.muacZ,
         label: getTrafficLabel(child.muacZ !== null ? -child.muacZ : null),
         interpretation: 'Persisted from the latest analysis',
       },

@@ -30,6 +30,10 @@ export default function RegisterPage() {
       const responseData = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401) {
+          router.push('/login?mode=register');
+          return;
+        }
         throw new Error(
           responseData.message || 'Failed to register child'
         );

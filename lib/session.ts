@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'crypto';
+import { cookies } from 'next/headers';
 
 export type SessionRole = 'family' | 'health_professional';
 
@@ -9,7 +10,12 @@ export interface SessionUser {
   role: SessionRole;
 }
 
-const SESSION_SECRET = process.env.SESSION_SECRET || 'aipnas-dev-session-secret-change-me';
+const isNextBuild = process.env.NEXT_PHASE === 'phase-production-build';
+const SESSION_SECRET = process.env.SESSION_SECRET || (
+  process.env.NODE_ENV === 'production' && !isNextBuild
+    ? (() => { throw new Error('SESSION_SECRET must be configured in production.'); })()
+    : 'aipnas-dev-session-secret-change-me'
+);
 const SESSION_NAME = 'aipnas_session';
 
 export function getSessionCookieName(): string {
@@ -62,4 +68,11 @@ export function verifySessionPayload(token: string): SessionUser | null {
 
 export function normalizeRole(role: string | undefined): SessionRole {
   return role === 'health_professional' ? 'health_professional' : 'family';
+}
+
+export async function getSessionUser(): Promise<SessionUser | null> {
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get(getSessionCookieName())?.value;
+
+  return sessionToken ? verifySessionPayload(sessionToken) : null;
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface ChildRecord {
@@ -17,12 +18,17 @@ export default function ChildrenPage() {
   const [children, setChildren] = useState<ChildRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const loadChildren = async () => {
       try {
         const response = await fetch('/api/children', { cache: 'no-store' });
         const data = await response.json();
+        if (response.status === 401) {
+          router.push('/login');
+          return;
+        }
         if (response.ok && data.success) {
           setChildren(data.children || []);
         }
@@ -32,7 +38,7 @@ export default function ChildrenPage() {
     };
 
     loadChildren();
-  }, []);
+  }, [router]);
 
   const filteredChildren = children.filter((child) => {
     const term = search.trim().toLowerCase();

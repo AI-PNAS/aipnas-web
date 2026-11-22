@@ -4,16 +4,29 @@ import { NextRequest, NextResponse } from 'next/server';
 import { registerChild, analyzeAndSaveNutrition } from '@/lib/db';
 import { registerChildSchema } from '@/lib/validation';
 import { z } from 'zod';
+import { getSessionUser } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json();
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json({ success: false, message: 'Sign in is required to register a child.' }, { status: 401 });
+    }
+    let data: unknown;
+    try {
+      data = await request.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, message: 'Request body must be valid JSON.' },
+        { status: 400 }
+      );
+    }
 
     // Validate input
     const validatedData = registerChildSchema.parse(data);
 
     // Register child
-    const child = await registerChild(validatedData);
+    const child = await registerChild(validatedData, user.id);
 
     // Run initial analysis
     const analysis = await analyzeAndSaveNutrition(child.id);

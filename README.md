@@ -190,10 +190,21 @@ curl http://localhost:3000/api/child/[id]
 
 ## 🚀 Deployment
 
+Before deploying, configure a persistent production database and a strong session secret. SQLite is suitable for local development only; Vercel serverless instances do not provide durable local disk storage.
+
 ### Vercel
 ```bash
 vercel
 ```
+
+Required Vercel environment variables:
+
+```bash
+DATABASE_URL="your-managed-postgresql-connection-string"
+SESSION_SECRET="a-long-random-value-at-least-32-characters"
+```
+
+For PostgreSQL deployments, change the Prisma datasource provider to `postgresql`, run `npx prisma db push` (or apply a reviewed migration), then redeploy.
 
 ### Docker
 ```dockerfile

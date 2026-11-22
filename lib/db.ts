@@ -3,6 +3,7 @@
 import { PrismaClient } from '@prisma/client';
 import { ChildData } from './types';
 import { analyzeChildNutrition } from './nutrition/analyzer';
+import { SessionUser } from './session';
 
 const isNextBuild = process.env.NEXT_PHASE === 'phase-production-build';
 
@@ -30,13 +31,16 @@ globalForPrisma.prisma = prisma;
 /**
  * Register a new child
  */
-export async function registerChild(childData: ChildData) {
+export async function registerChild(childData: ChildData, userId: string) {
   try {
     const data = { ...childData };
     delete data.id;
 
     const child = await prisma.child.create({
-      data,
+      data: {
+        ...data,
+        createdById: userId,
+      },
     });
     return child;
   } catch (error) {
@@ -102,9 +106,10 @@ export async function analyzeAndSaveNutrition(childId: string) {
 /**
  * Get all children
  */
-export async function getAllChildren() {
+export async function getAllChildren(user: SessionUser) {
   try {
     return await prisma.child.findMany({
+      where: user.role === 'health_professional' ? undefined : { createdById: user.id },
       orderBy: { createdAt: 'desc' },
     });
   } catch (error) {
@@ -116,10 +121,13 @@ export async function getAllChildren() {
 /**
  * Get children by risk level
  */
-export async function getChildrenByRiskLevel(riskLevel: string) {
+export async function getChildrenByRiskLevel(riskLevel: string, user: SessionUser) {
   try {
     return await prisma.child.findMany({
-      where: { riskLevel },
+      where: {
+        riskLevel,
+        ...(user.role === 'health_professional' ? {} : { createdById: user.id }),
+      },
       orderBy: { createdAt: 'desc' },
     });
   } catch (error) {
@@ -131,11 +139,13 @@ export async function getChildrenByRiskLevel(riskLevel: string) {
 /**
  * Get single child by ID
  */
-export async function getChildById(id: string) {
+export async function getChildById(id: string, user?: SessionUser) {
   try {
-    return await prisma.child.findUnique({
+    const child = await prisma.child.findUnique({
       where: { id },
     });
+    if (!child || (user?.role !== 'health_professional' && child.createdById !== user?.id)) return null;
+    return child;
   } catch (error) {
     console.error('Error fetching child:', error);
     throw error;

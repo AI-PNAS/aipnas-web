@@ -2,12 +2,17 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getChildById, getAnalysisHistory } from '@/lib/db';
+import { getSessionUser } from '@/lib/session';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json({ success: false, message: 'Sign in is required.' }, { status: 401 });
+    }
     const { id } = await params;
 
     if (!id) {
@@ -20,7 +25,7 @@ export async function GET(
       );
     }
 
-    const child = await getChildById(id);
+    const child = await getChildById(id, user);
 
     if (!child) {
       return NextResponse.json(
