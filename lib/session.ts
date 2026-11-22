@@ -11,11 +11,15 @@ export interface SessionUser {
 }
 
 const isNextBuild = process.env.NEXT_PHASE === 'phase-production-build';
-const SESSION_SECRET = process.env.SESSION_SECRET || (
-  process.env.NODE_ENV === 'production' && !isNextBuild
-    ? (() => { throw new Error('SESSION_SECRET must be configured in production.'); })()
-    : 'aipnas-dev-session-secret-change-me'
-);
+const SESSION_SECRET =
+  process.env.SESSION_SECRET ||
+  (process.env.NODE_ENV === 'production' && !isNextBuild
+    ? 'aipnas-unconfigured-production-fallback-change-me'
+    : 'aipnas-dev-session-secret-change-me');
+
+export function isSessionConfigured(): boolean {
+  return Boolean(process.env.SESSION_SECRET);
+}
 const SESSION_NAME = 'aipnas_session';
 
 export function getSessionCookieName(): string {

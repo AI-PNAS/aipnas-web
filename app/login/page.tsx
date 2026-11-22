@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
+import { apiRequest } from '@/lib/api-client';
 
 type AuthMode = 'login' | 'register';
 type Role = 'family' | 'health_professional';
@@ -45,15 +46,15 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const result = await apiRequest<{ success: boolean; message?: string }>(
+        '/api/auth/login',
+        {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginForm),
-      });
-
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.message || 'Failed to sign in');
+        },
+      );
+      if (!result.ok) {
+        throw new Error(result.message);
       }
 
       setSuccess('Signed in successfully. Redirecting...');
@@ -83,9 +84,12 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
+      const result = await apiRequest<{
+        success: boolean;
+        message?: string;
+        errors?: Array<{ message?: string }>;
+      }>('/api/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fullName: registerForm.fullName,
           email: registerForm.email,
@@ -93,11 +97,9 @@ function LoginForm() {
           role: registerForm.role,
         }),
       });
-
-      const result = await response.json();
-      if (!response.ok) {
-        const validationMessages = Array.isArray(result.errors)
-          ? result.errors
+      if (!result.ok) {
+        const validationMessages = Array.isArray(result.data?.errors)
+          ? result.data.errors
               .map((entry: { message?: unknown }) => entry.message)
               .filter((message: unknown): message is string => typeof message === 'string')
               .join(' ')

@@ -6,13 +6,16 @@ import { analyzeChildNutrition } from './nutrition/analyzer';
 import { SessionUser } from './session';
 
 const isNextBuild = process.env.NEXT_PHASE === 'phase-production-build';
+const DATABASE_URL_CONFIGURED = Boolean(process.env.DATABASE_URL);
+
+export function isDatabaseConfigured(): boolean {
+  return DATABASE_URL_CONFIGURED;
+}
 
 if (!process.env.DATABASE_URL) {
   if (process.env.NODE_ENV === 'production' && !isNextBuild) {
-    throw new Error('DATABASE_URL must be configured in the Vercel project environment.');
+    process.env.DATABASE_URL = 'postgresql://aipnas:not-configured@127.0.0.1:5432/aipnas';
   }
-
-  process.env.DATABASE_URL = 'file:./prisma/dev.db';
 }
 
 // Singleton pattern for Prisma Client

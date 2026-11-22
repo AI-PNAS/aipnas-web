@@ -7,6 +7,7 @@ import RegistrationForm from '@/app/components/RegistrationForm';
 import AnalysisResult from '@/app/components/AnalysisResult';
 import { RegisterChildInput } from '@/lib/validation';
 import { NutritionAnalysisResult } from '@/lib/types';
+import { apiRequest } from '@/lib/api-client';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -21,28 +22,26 @@ export default function RegisterPage() {
     setSavedMessage(null);
 
     try {
-      const response = await fetch('/api/register-child', {
+      const result = await apiRequest<{
+        success: boolean;
+        message?: string;
+        errors?: Array<{ message?: string }>;
+        analysis?: NutritionAnalysisResult | null;
+      }>('/api/register-child', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(data),
       });
 
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 401) {
+      if (!result.ok) {
+        if (result.status === 401) {
           router.push('/login?mode=register');
           return;
         }
-        throw new Error(
-          responseData.message || 'Failed to register child'
-        );
+        throw new Error(result.message);
       }
 
-      if (responseData.analysis) {
-        setResult(responseData.analysis);
+      if (result.data?.analysis) {
+        setResult(result.data.analysis);
       } else {
         setSavedMessage('Child profile saved. Add anthropometric measurements when available to calculate WHO Z-scores.');
       }

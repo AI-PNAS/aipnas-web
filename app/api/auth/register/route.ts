@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { hashPassword } from '@/lib/auth';
-import { getSessionCookieName, normalizeRole, signSessionPayload } from '@/lib/session';
+import { getSessionCookieName, isSessionConfigured, normalizeRole, signSessionPayload } from '@/lib/session';
 
 const registerSchema = z.object({
   fullName: z.string().trim().min(2, 'Full name is required').max(120, 'Full name is too long'),
@@ -14,6 +14,12 @@ const registerSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  if (!isSessionConfigured()) {
+    return NextResponse.json(
+      { success: false, message: 'SESSION_SECRET is not configured in Vercel Production.', code: 'SESSION_NOT_CONFIGURED' },
+      { status: 503 },
+    );
+  }
   try {
     let body: unknown;
 
@@ -128,7 +134,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: 'The database is unavailable. Set DATABASE_URL and ensure the database is running.',
+          code: 'DATABASE_UNAVAILABLE',
+          message: 'The database is unavailable. Configure a valid DATABASE_URL in Vercel.',
         },
         { status: 503 }
       );

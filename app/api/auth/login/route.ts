@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { verifyPassword } from '@/lib/auth';
-import { getSessionCookieName, normalizeRole, signSessionPayload } from '@/lib/session';
+import { getSessionCookieName, isSessionConfigured, normalizeRole, signSessionPayload } from '@/lib/session';
 
 const loginSchema = z.object({
   email: z.string().trim().email('Valid email is required'),
@@ -11,6 +11,12 @@ const loginSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  if (!isSessionConfigured()) {
+    return NextResponse.json(
+      { success: false, message: 'SESSION_SECRET is not configured in Vercel Production.', code: 'SESSION_NOT_CONFIGURED' },
+      { status: 503 },
+    );
+  }
   try {
     const payload = loginSchema.parse(await request.json());
     const normalizedEmail = payload.email.toLowerCase();
@@ -74,6 +80,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         message: 'Failed to login',
+        code: 'LOGIN_FAILED',
       },
       { status: 500 }
     );

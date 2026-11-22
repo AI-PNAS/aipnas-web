@@ -11,6 +11,7 @@ import {
   writeRegionCache,
 } from '@/lib/geography';
 import { SUPPORTED_SCREENING_LANGUAGES, ScreeningLanguage, bilingualLabel } from '@/lib/i18n/screening';
+import { apiRequest } from '@/lib/api-client';
 
 type FormState = Record<string, string>;
 
@@ -87,11 +88,13 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
 
     void (async () => {
       try {
-        const response = await fetch('/api/geography/countries');
-        const data = await response.json();
-        if (!response.ok || !data.success) throw new Error(data.message);
-        setCountries(data.countries);
-        writeCountryCache(data.countries);
+        const result = await apiRequest<{ success: boolean; message?: string; countries?: CountryOption[] }>(
+          '/api/geography/countries',
+        );
+        if (!result.ok || !result.data?.success) throw new Error(result.message);
+        const countries = result.data.countries || [];
+        setCountries(countries);
+        writeCountryCache(countries);
       } catch (error) {
         setGeographyError(error instanceof Error ? error.message : 'Country data is unavailable.');
       }
@@ -129,11 +132,15 @@ export default function RegistrationForm({ onSubmit, isLoading }: RegistrationFo
     setGeographyError(null);
     void (async () => {
       try {
-        const response = await fetch(`/api/geography/regions?countryCode=${encodeURIComponent(countryCode)}`);
-        const data = await response.json();
-        if (!response.ok || !data.success) throw new Error(data.message);
-        setRegions(data.divisions || []);
-        if (countryCode === 'ET') writeRegionCache(data.divisions || []);
+        const result = await apiRequest<{
+          success: boolean;
+          message?: string;
+          divisions?: AdministrativeDivision[];
+        }>(`/api/geography/regions?countryCode=${encodeURIComponent(countryCode)}`);
+        if (!result.ok || !result.data?.success) throw new Error(result.data?.message || result.message);
+        const divisions = result.data.divisions || [];
+        setRegions(divisions);
+        if (countryCode === 'ET') writeRegionCache(divisions);
       } catch (error) {
         setGeographyError(error instanceof Error ? error.message : 'Region data is unavailable.');
         if (countryCode === 'ET') setRegions(readRegionCache());
