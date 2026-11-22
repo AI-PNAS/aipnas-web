@@ -13,10 +13,12 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<NutritionAnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [savedMessage, setSavedMessage] = useState<string | null>(null);
 
   const handleSubmit = async (data: RegisterChildInput) => {
     setIsLoading(true);
     setError(null);
+    setSavedMessage(null);
 
     try {
       const response = await fetch('/api/register-child', {
@@ -39,7 +41,11 @@ export default function RegisterPage() {
         );
       }
 
-      setResult(responseData.analysis);
+      if (responseData.analysis) {
+        setResult(responseData.analysis);
+      } else {
+        setSavedMessage('Child profile saved. Add anthropometric measurements when available to calculate WHO Z-scores.');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

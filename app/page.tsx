@@ -16,9 +16,8 @@ const services = [
 ];
 
 const childStories = [
-  { src: '/public/images/aipnas-logo.png/a.png', alt: 'Child nutrition assessment with caregiver', label: 'Early visibility' },
-  { src: '/public/images/aipnas-logo.png/ai.png', alt: 'Child receiving care and nutrition support', label: 'Focused support' },
-  { src: '/public/images/aipnas-logo.png/b.png', alt: 'Community child nutrition monitoring', label: 'Community care' },
+  { src: '/public/images/aipnas-logo.png/ai.png', alt: 'Child receiving care and nutrition support', label: 'Early Visibility', title: 'Child receiving care and nutrition support' },
+  { src: '/public/images/aipnas-logo.png/b.png', alt: 'Community child nutrition monitoring', label: 'Focused Support', title: 'Community child nutrition monitoring' },
 ];
 
 export default function HomePage() {
@@ -48,88 +47,65 @@ export default function HomePage() {
             </div>
           </header>
 
-          <div className="mt-16 grid items-center gap-12 md:grid-cols-[1.15fr_0.85fr]">
-            <div>
-              <div className="inline-flex rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700">
-                AI-assisted pediatric nutrition assessment
+          <div className="mt-12 grid items-center gap-10 lg:grid-cols-[1.08fr_0.92fr]">
+            <div className="homepage-hero-text">
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">
+                <span className="h-2 w-2 rounded-full bg-red-500 nutrition-alert-pulse" />
+                Early nutrition screening
               </div>
-              <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-900 md:text-6xl">
-                Supporting safer child growth monitoring.
+              <h1 className="mt-6 max-w-2xl text-5xl font-black leading-[1.02] tracking-tight text-slate-950 md:text-7xl">
+                Your Child&apos;s Nutrition Matters.
               </h1>
-              <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
-                AI PNAS helps families and health professionals review child measurements, monitor nutritional risk,
-                and support follow-up with AI-assisted screening and professional oversight.
+              <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600 md:text-xl">
+                Detect malnutrition early. Support healthy growth. Help protect every child.
               </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Link href="/login?mode=register" className="rounded-full bg-teal-700 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-600">
-                  Start Assessment
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="/login?mode=register" className="inline-flex min-h-14 items-center justify-center rounded-full bg-blue-700 px-7 py-4 text-base font-bold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-800">
+                  Start Child Nutrition Screening
                 </Link>
-                <Link href="/about" className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
-                  Learn How It Works
+                <Link href="/about" className="inline-flex min-h-14 items-center justify-center rounded-full border border-slate-300 bg-white px-7 py-4 text-base font-bold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50">
+                  How It Works
                 </Link>
               </div>
-              <div className="mt-10 grid max-w-lg gap-4 sm:grid-cols-3">
-                {[
-                  ['WHO-based', 'growth standards'],
-                  ['AI-assisted', 'measurement support'],
-                  ['Human review', 'clinical oversight'],
-                ].map(([title, description]) => (
-                  <div key={title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm font-semibold text-slate-900">{title}</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-600">{description}</p>
-                  </div>
+              <div className="mt-8 flex flex-wrap gap-3">
+                {['WHO-aligned screening', 'Offline-ready workflow', 'Human review'].map((item) => (
+                  <span key={item} className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700">
+                    {item}
+                  </span>
                 ))}
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-slate-200 bg-slate-900 p-6 text-white shadow-xl shadow-slate-200">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-teal-300">Nutrition assessment</p>
-                  <h2 className="mt-2 text-2xl font-semibold">Child Growth Profile</h2>
-                </div>
-                <div className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
-                  Active
+            <div className="homepage-hero-photo relative">
+              <div className="relative aspect-[4/4.2] overflow-hidden rounded-[2.25rem] border border-slate-200 bg-slate-100 shadow-2xl shadow-slate-300/60">
+                <Image
+                  src="/public/images/aipnas-logo.png/ai.png"
+                  alt="Child receiving respectful care and nutrition support"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 42vw"
+                  className="homepage-photo-zoom object-cover"
+                />
+                <div className="absolute inset-x-5 bottom-5 rounded-2xl border border-white/40 bg-slate-950/75 p-4 text-white backdrop-blur-md">
+                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-teal-200">Early screening</p>
+                  <p className="mt-1 text-lg font-semibold">Notice changes. Act earlier.</p>
                 </div>
               </div>
-
-              <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-500/15 text-2xl">👧</div>
+              <div className="homepage-risk-indicator absolute -right-2 top-8 rounded-2xl border border-red-200 bg-white px-4 py-3 shadow-xl shadow-red-100">
+                <div className="flex items-center gap-3">
+                  <span className="relative flex h-4 w-4">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-60" />
+                    <span className="relative inline-flex h-4 w-4 rounded-full border-2 border-white bg-red-600 shadow-sm" />
+                  </span>
                   <div>
-                    <p className="font-semibold">Child profile</p>
-                    <p className="text-sm text-slate-300">24 months · Female</p>
+                    <p className="text-xs font-black uppercase tracking-wide text-red-700">Act early</p>
+                    <p className="mt-0.5 text-xs text-slate-600">Screen + review</p>
                   </div>
                 </div>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  {[
-                    ['Weight', '10.8 kg'],
-                    ['Height', '84.5 cm'],
-                    ['MUAC', '14.2 cm'],
-                  ].map(([label, value]) => (
-                    <div key={label} className="rounded-xl border border-white/10 bg-slate-800 p-3">
-                      <p className="text-xs text-slate-400">{label}</p>
-                      <p className="mt-2 text-base font-semibold text-white">{value}</p>
-                    </div>
-                  ))}
-                </div>
               </div>
-
-              <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-slate-300">Growth assessment</p>
-                  <p className="text-sm font-semibold text-emerald-300">Normal range</p>
-                </div>
-                <div className="mt-4 flex h-16 items-end gap-2">
-                  {[35, 52, 56, 68, 82].map((height, index) => (
-                    <span
-                      key={index}
-                      className="w-full rounded-t-xl bg-gradient-to-t from-teal-500 to-cyan-300"
-                      style={{ height: `${height}%` }}
-                    />
-                  ))}
-                </div>
+              <div className="homepage-arrow absolute -left-8 top-28 hidden items-center gap-2 text-blue-700 lg:flex" aria-hidden="true">
+                <span className="text-4xl">↘</span>
+                <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold">Screen early</span>
               </div>
             </div>
           </div>

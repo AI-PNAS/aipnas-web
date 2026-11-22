@@ -17,7 +17,10 @@ export interface ChildData {
   religion?: string;
   continent?: string;
   country?: string;
+  countryCode?: string;
+  countryIso3?: string;
   region?: string;
+  regionCode?: string;
   zone?: string;
   woreda?: string;
   kebele?: string;

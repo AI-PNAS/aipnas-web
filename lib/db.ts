@@ -31,15 +31,28 @@ globalForPrisma.prisma = prisma;
 /**
  * Register a new child
  */
-export async function registerChild(childData: ChildData, userId: string) {
+export async function registerChild(
+  childData: Omit<ChildData, 'weight' | 'height' | 'muac'> &
+    Partial<Pick<ChildData, 'weight' | 'height' | 'muac'>>,
+  userId: string,
+) {
   try {
     const data = { ...childData };
     delete data.id;
+    const weight = data.weight;
+    const height = data.height;
+    const muac = data.muac;
+    delete data.weight;
+    delete data.height;
+    delete data.muac;
 
     const child = await prisma.child.create({
       data: {
         ...data,
         createdById: userId,
+        ...(typeof weight === 'number' ? { weight } : {}),
+        ...(typeof height === 'number' ? { height } : {}),
+        ...(typeof muac === 'number' ? { muac } : {}),
       },
     });
     return child;
@@ -59,6 +72,13 @@ export async function analyzeAndSaveNutrition(childId: string) {
     });
 
     if (!child) throw new Error('Child not found');
+    if (
+      typeof child.weight !== 'number' ||
+      typeof child.height !== 'number' ||
+      typeof child.muac !== 'number'
+    ) {
+      return null;
+    }
 
     const childData = {
       ...child,

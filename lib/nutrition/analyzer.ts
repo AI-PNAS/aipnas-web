@@ -114,13 +114,25 @@ export function classifyBMI(bmi: number): { status: string; severity: RiskLevel 
  * Determine Overall Nutrition Status
  * Priority: MUAC classification takes precedence
  */
-export function determineNutritionStatus(muac: number, bmi: number, bmiForAgeZ: number | null, ageMonths: number, edema = false): NutritionStatus {
+export function determineNutritionStatus(
+  muac: number,
+  bmi: number,
+  bmiForAgeZ: number | null,
+  weightForHeightZ: number | null,
+  ageMonths: number,
+  edema = false,
+): NutritionStatus {
   if (edema) return 'SAM';
 
-  // MUAC takes priority for acute malnutrition detection
+  // WHO acute-malnutrition screening for 6-59 months.
   if (ageMonths >= 6 && ageMonths < 60) {
-    if (muac < 11.5) return 'SAM';
-    if (muac < 12.5) return 'MAM';
+    const severeWasting = weightForHeightZ !== null && weightForHeightZ < -3;
+    const moderateWasting = weightForHeightZ !== null && weightForHeightZ >= -3 && weightForHeightZ < -2;
+    if (muac < 11.5 || severeWasting) return 'SAM';
+    if (muac < 12.5 || moderateWasting) return 'MAM';
+    if (weightForHeightZ !== null) {
+      if (weightForHeightZ >= -2 && muac >= 12.5) return 'Normal';
+    }
   }
 
   // Use age-adjusted BMI when the WHO reference provides it.
@@ -343,6 +355,7 @@ export async function analyzeChildNutrition(child: ChildData): Promise<Nutrition
     child.muac,
     bmi,
     classificationDetails.zScores.bmiForAge.value,
+    classificationDetails.zScores.weightForHeight.value,
     child.age,
     child.edema,
   );

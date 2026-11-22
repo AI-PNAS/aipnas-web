@@ -23,7 +23,10 @@ model Child {
   religion                      String?
   continent                     String?
   country                       String?
+  countryCode                   String?
+  countryIso3                   String?
   region                        String?
+  regionCode                    String?
   zone                          String?
   woreda                        String?
   kebele                        String?
@@ -62,9 +65,9 @@ model Child {
   temperatureTime               String?
   spo2                          Float?
   oxygenSupport                 String?
-  weight                        Float // kg
-  height                        Float // cm
-  muac                          Float // mid-upper arm circumference in cm
+  weight                        Float? // kg
+  height                        Float? // cm
+  muac                          Float? // mid-upper arm circumference in cm
   heightSource                  String?
   weightSource                  String?
   headCircumference             Float? // optional, in cm
