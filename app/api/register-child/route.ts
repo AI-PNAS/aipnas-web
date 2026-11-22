@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
     const validatedData = registerChildSchema.parse(data);
     if (!validatedData.patientId) {
       validatedData.patientId = `AI-PNAS-${randomUUID().replace(/-/g, '').slice(0, 16).toUpperCase()}`;
+    }
 
     // Register child
     const child = await registerChild(validatedData, user.id);

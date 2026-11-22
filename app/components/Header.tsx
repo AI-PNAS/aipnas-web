@@ -27,9 +27,14 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
     { href: '/about', label: language === 'en' ? 'About' : 'ስለ እኛ' },
     { href: '/services', label: language === 'en' ? 'Services' : 'አገልግሎቶች' },
     { href: '/register', label: language === 'en' ? 'Nutrition Screening' : 'የአመጋገብ ግምገማ' },
-    { href: '/ai-camera', label: language === 'en' ? 'AI Camera' : 'AI ካሜራ' },
     { href: '/global-impact', label: language === 'en' ? 'Global Impact' : 'ዓለምአቀፍ ተፅዕኖ' },
-    { href: '/resources', label: language === 'en' ? 'Resources' : 'ግብዓቶች' },
+    { href: '/ai-camera', label: language === 'en' ? 'AI Camera' : 'AI ካሜራ' },
+    { href: '/family-nutrition-guide', label: language === 'en' ? 'Family Nutrition Guide' : 'የቤተሰብ አመጋገብ መመሪያ' },
+    { href: '/healthy-feeding-recipes', label: language === 'en' ? 'Healthy Feeding & Recipes' : 'ጤናማ መመገብና የምግብ አሰራር' },
+    { href: '/child-growth-development', label: language === 'en' ? 'Child Growth & Development' : 'የልጅ እድገትና ዕድገት' },
+    { href: '/malnutrition-awareness', label: language === 'en' ? 'Malnutrition Awareness' : 'የችግኝ በሽታ ግንዛቤ' },
+    { href: '/resources', label: language === 'en' ? 'Health Resources' : 'የጤና ግብዓቶች' },
+    { href: '/donate', label: language === 'en' ? 'Donate for Child Screening' : 'ለልጆች ግምገማ ይድጎሙ' },
     { href: '/our-team', label: language === 'en' ? 'Our Team' : 'ቡድን' },
     { href: '/partners', label: language === 'en' ? 'Partners' : 'አጋሮች' },
     { href: '/contact', label: language === 'en' ? 'Contact' : 'አድራሻ' },
@@ -38,8 +43,8 @@ export default function Header({ currentPage = 'home' }: HeaderProps) {
   const pageLinkStyles = (page: string) =>
     `border-b-2 pb-1 transition ${currentPage === page ? 'border-blue-700 text-slate-950' : 'border-transparent text-slate-600 hover:border-slate-300 hover:text-slate-950'}`;
 
-  const primaryLinks = navLinks.slice(0, 6);
-  const moreLinks = navLinks.slice(6);
+  const primaryLinks = navLinks.slice(0, 5);
+  const moreLinks = navLinks.slice(5);
 
   return (
     <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md">
